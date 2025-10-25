@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shree Shyam Property - Premium Property Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="app-container">
+        <button class="mobile-menu-toggle" onclick="toggleSidebar()">
+            ☰
+        </button>
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">SSP</div>
+                    <span>Shree Shyam Property</span>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a class="nav-link active" onclick="navigateTo('dashboard')">
+                            <span class="nav-icon">🏠</span>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="navigateTo('properties')">
+                            <span class="nav-icon">🏢</span>
+                            <span>All Properties</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="navigateTo('add-property')">
+                            <span class="nav-icon">➕</span>
+                            <span>Add Property</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="navigateTo('employees')">
+                            <span class="nav-icon">👥</span>
+                            <span>Employees</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="navigateTo('add-employee')">
+                            <span class="nav-icon">👤</span>
+                            <span>Add Employee</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="exportToExcel()">
+                            <span class="nav-icon">📥</span>
+                            <span>Export to Excel</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main class="main-content">
+            <div id="dashboard-page" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Welcome to PropertyPro - Your Complete Property Management Solution</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card blue">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Properties</span>
+                            <div class="stat-icon blue">🏢</div>
+                        </div>
+                        <div class="stat-value" id="total-properties">0</div>
+                        <div class="stat-label">Active listings</div>
+                    </div>
+
+                    <div class="stat-card green">
+                        <div class="stat-header">
+                            <span class="stat-title">For Sale</span>
+                            <div class="stat-icon green">💰</div>
+                        </div>
+                        <div class="stat-value" id="properties-for-sale">0</div>
+                        <div class="stat-label">Available to purchase</div>
+                    </div>
+
+                    <div class="stat-card orange">
+                        <div class="stat-header">
+                            <span class="stat-title">For Rent</span>
+                            <div class="stat-icon orange">🔑</div>
+                        </div>
+                        <div class="stat-value" id="properties-for-rent">0</div>
+                        <div class="stat-label">Available to rent</div>
+                    </div>
+
+                    <div class="stat-card purple">
+                        <div class="stat-header">
+                            <span class="stat-title">Total Employees</span>
+                            <div class="stat-icon purple">👥</div>
+                        </div>
+                        <div class="stat-value" id="total-employees">0</div>
+                        <div class="stat-label">Team members</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">Recent Properties</h2>
+                        <button class="btn btn-primary btn-sm" onclick="navigateTo('properties')">
+                            View All
+                        </button>
+                    </div>
+                    <div id="recent-properties-container"></div>
+                </div>
+            </div>
+
+            <div id="properties-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">All Properties</h1>
+                    <p class="page-subtitle">Manage your property listings</p>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" class="form-control" placeholder="Search properties..."
+                                id="search-properties" oninput="filterProperties()">
+                        </div>
+                        <select class="form-control" id="filter-listing-type" onchange="filterProperties()"
+                            style="max-width: 200px;">
+                            <option value="">All Listings</option>
+                            <option value="For Sale">For Sale</option>
+                            <option value="For Rent">For Rent</option>
+                        </select>
+                        <select class="form-control" id="filter-property-type" onchange="filterProperties()"
+                            style="max-width: 200px;">
+                            <option value="">All Types</option>
+                            <option value="Villa">Villa</option>
+                            <option value="Plot">Plot</option>
+                            <option value="Flat">Flat</option>
+                            <option value="Room">Room</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="House">House</option>
+                            <option value="Commercial">Commercial</option>
+                        </select>
+                        <button class="btn btn-success" onclick="exportToExcel()">
+                            📥 Export Excel
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="properties-table">
+                            <thead>
+                                <tr>
+                                    <th>Property Name</th>
+                                    <th>Owner</th>
+                                    <th>Type</th>
+                                    <th>BHK</th>
+                                    <th>Location</th>
+                                    <th>Price</th>
+                                    <th>Listing</th>
+                                    <th>Employee</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="properties-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-properties-message" class="empty-state hidden">
+                        <div class="empty-state-icon">📋</div>
+                        <h3>No Properties Found</h3>
+                        <p>Start by adding your first property</p>
+                        <button class="btn btn-primary mt-24" onclick="navigateTo('add-property')">Add Property</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="add-property-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title" id="property-form-title">Add New Property</h1>
+                    <p class="page-subtitle">Fill in the property details</p>
+                </div>
+
+                <div class="card">
+                    <form id="property-form" onsubmit="saveProperty(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">Property Name</label>
+                                <input type="text" class="form-control" id="property-name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">Owner Name</label>
+                                <input type="text" class="form-control" id="owner-name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">Assigned Employee</label>
+                                <select class="form-control" id="assigned-employee" required>
+                                    <option value="">Select Employee</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">Property Type</label>
+                                <select class="form-control" id="property-type" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Villa">Villa</option>
+                                    <option value="Plot">Plot</option>
+                                    <option value="Flat">Flat</option>
+                                    <option value="Room">Room</option>
+                                    <option value="Apartment">Apartment</option>
+                                    <option value="House">House</option>
+                                    <option value="Commercial">Commercial Space</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">BHK Configuration</label>
+                                <select class="form-control" id="bhk-type" required>
+                                    <option value="">Select BHK</option>
+                                    <option value="Studio/BK">Studio/BK Only</option>
+                                    <option value="1BHK">1 BHK</option>
+                                    <option value="2BHK">2 BHK</option>
+                                    <option value="3BHK">3 BHK</option>
+                                    <option value="4BHK">4 BHK</option>
+                                    <option value="5BHK+">5+ BHK</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">Area (sq ft)</label>
+                                <input type="number" class="form-control" id="area-sqft" required min="1">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">Price (₹)</label>
+                                <input type="number" class="form-control" id="price" required min="0">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">Listing Type</label>
+                                <div class="radio-group">
+                                    <label class="radio-option">
+                                        <input type="radio" name="listing-type" value="For Sale" required>
+                                        <span>For Sale</span>
+                                    </label>
+                                    <label class="radio-option">
+                                        <input type="radio" name="listing-type" value="For Rent" required>
+                                        <span>For Rent</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label required">Location</label>
+                                <input type="text" class="form-control" id="location" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label">Description</label>
+                                <textarea class="form-control" id="description" rows="4"></textarea>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="property-id">
+
+                        <div style="display: flex; gap: 12px; margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submit-property-btn">
+                                ✓ Save Property
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-lg" onclick="resetPropertyForm()">
+                                Reset Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="employees-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Employees</h1>
+                    <p class="page-subtitle">Manage your team members</p>
+                </div>
+
+                <div class="card">
+                    <div class="toolbar">
+                        <div class="search-box">
+                            <span class="search-icon">🔍</span>
+                            <input type="text" class="form-control" placeholder="Search employees..."
+                                id="search-employees" oninput="filterEmployees()">
+                        </div>
+                        <button class="btn btn-primary" onclick="navigateTo('add-employee')">
+                            ➕ Add Employee
+                        </button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="table" id="employees-table">
+                            <thead>
+                                <tr>
+                                    <th>Employee ID</th>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Properties</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="employees-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="no-employees-message" class="empty-state hidden">
+                        <div class="empty-state-icon">👥</div>
+                        <h3>No Employees Found</h3>
+                        <p>Start by adding your first employee</p>
+                        <button class="btn btn-primary mt-24" onclick="navigateTo('add-employee')">Add Employee</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="add-employee-page" class="page hidden">
+                <div class="page-header">
+                    <h1 class="page-title" id="employee-form-title">Add New Employee</h1>
+                    <p class="page-subtitle">Fill in the employee details</p>
+                </div>
+
+                <div class="card">
+                    <form id="employee-form" onsubmit="saveEmployee(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label required">Employee ID</label>
+                                <input type="text" class="form-control" id="employee-id" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">Employee Name</label>
+                                <input type="text" class="form-control" id="employee-name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">Contact Number</label>
+                                <input type="tel" class="form-control" id="employee-contact" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label required">Email Address</label>
+                                <input type="email" class="form-control" id="employee-email" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label class="form-label required">Role/Department</label>
+                                <select class="form-control" id="employee-role" required>
+                                    <option value="">Select Role</option>
+                                    <option value="Property Manager">Property Manager</option>
+                                    <option value="Sales Executive">Sales Executive</option>
+                                    <option value="Rental Manager">Rental Manager</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Customer Support">Customer Support</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="employee-edit-id">
+
+                        <div style="display: flex; gap: 12px; margin-top: 24px;">
+                            <button type="submit" class="btn btn-primary btn-lg" id="submit-employee-btn">
+                                ✓ Save Employee
+                            </button>
+                            <button type="button" class="btn btn-secondary btn-lg" onclick="resetEmployeeForm()">
+                                Reset Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <div id="modal-container"></div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
