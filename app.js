@@ -182,46 +182,58 @@ function updateEmployeeDropdown() {
 
 // --- Save Property (Writes to Firestore) ---
 async function saveProperty(event) {
-    event.preventDefault();
-    if (!db) return showToast('Database connection failed. Cannot save.', 'error');
+    event.preventDefault(); // Stop page reload
+    
+    // 1. Get the button and show loading text
+    const btn = document.getElementById('submit-property-btn');
+    const originalText = btn.innerText;
+    btn.innerText = "Saving...";
+    btn.disabled = true;
 
-    // Prepare data object
+    if (!db) return showToast('Database connection failed.', 'error');
+
+    // 2. Collect data (INCLUDING THE NEW IMAGE LINK)
     const propertyData = {
         propertyName: document.getElementById('property-name').value,
         ownerName: document.getElementById('owner-name').value,
         assignedEmployee: document.getElementById('assigned-employee').value,
+        
+        // --- THIS IS THE NEW PART ---
+        imageUrl: document.getElementById('property-image').value, 
+        // -----------------------------
+        
         bhkType: document.getElementById('bhk-type').value,
-        // Ensure numbers are parsed correctly
         price: parseFloat(document.getElementById('price').value) || 0,
         listingType: document.querySelector('input[name="listing-type"]:checked')?.value || '',
         propertyType: document.getElementById('property-type').value,
-        // Ensure numbers are parsed correctly
         areaSqft: parseInt(document.getElementById('area-sqft').value) || 0,
         location: document.getElementById('location').value,
         description: document.getElementById('description').value,
-        // Use Firestore's server timestamp for reliable time tracking
         dateAdded: firebase.firestore.FieldValue.serverTimestamp()
     };
 
     try {
         if (editingPropertyId) {
-            // Update existing property using its Firestore ID
             await db.collection("properties").doc(editingPropertyId).update(propertyData);
-            showToast('Property updated successfully in cloud!', 'success');
+            showToast('Property updated successfully!', 'success');
             editingPropertyId = null;
         } else {
-            // Add new property
             await db.collection("properties").add(propertyData);
-            showToast('Property added successfully to cloud!', 'success');
+            showToast('Property added successfully!', 'success');
         }
     } catch (error) {
         console.error("Error saving property:", error);
-        showToast(`Failed to save property: ${error.message}`, 'error');
+        showToast(`Failed to save: ${error.message}`, 'error');
     }
 
+    // 3. Reset everything
     resetPropertyForm();
-    await loadInitialData(); // Reload all data and update UI
+    await loadInitialData();
     navigateTo('properties');
+    
+    // Restore button
+    btn.innerText = originalText;
+    btn.disabled = false;
 }
 
 // Reset Property Form
@@ -715,4 +727,5 @@ window.onload = function () {
     // Start by loading data from Firebase
     loadInitialData();
     navigateTo('dashboard');
+
 };
