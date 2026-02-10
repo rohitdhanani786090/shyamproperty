@@ -15,6 +15,35 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
     
     <link rel="stylesheet" href="style.css">
+    <head>
+    <meta charset="UTF-8">
+    <title>Creative Crew - Protected</title>
+    
+    <script>
+        // Check if the "Stamp" exists
+        if (sessionStorage.getItem('isLoggedIn') !== 'true') {
+            // If not logged in, kick them back to login.html
+            window.location.href = "login.html";
+        }
+    </script>
+    ```
+
+### Step 3: Add a Logout Button
+Once they are inside, they need a way to leave. Add this "Logout" button to your `nav-actions` inside the main software:
+
+```html
+<button class="btn-icon" onclick="logout()" style="color: red;">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+</button>
+
+<script>
+    function logout() {
+        // Remove the stamp
+        sessionStorage.removeItem('isLoggedIn');
+        // Go back to login
+        window.location.href = "login.html";
+    }
+</script>
 </head>
 
 <body>
