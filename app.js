@@ -263,6 +263,7 @@ function editProperty(id) {
     document.getElementById('area-sqft').value = property.areaSqft;
     document.getElementById('location').value = property.location;
     document.getElementById('description').value = property.description || '';
+    document.getElementById('property-image').value = property.imageUrl || '';
 
     document.getElementById('property-form-title').textContent = 'Edit Property';
     document.getElementById('submit-property-btn').innerHTML = '✓ Update Property';
@@ -729,3 +730,4 @@ window.onload = function () {
     navigateTo('dashboard');
 
 };
+
