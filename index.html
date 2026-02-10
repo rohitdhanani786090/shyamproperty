@@ -63,7 +63,7 @@
             border: 1px solid #ddd;
             border-radius: 6px;
             font-size: 14px;
-            box-sizing: border-box; /* Important for padding */
+            box-sizing: border-box;
         }
 
         .login-btn {
@@ -295,7 +295,7 @@
                 </div>
 
                 <div class="card">
-                    <form id="property-form" onsubmit="saveProperty(event)">
+                    <form id="property-form">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label class="form-label required">Property Name</label>
@@ -379,7 +379,7 @@
                         <input type="hidden" id="property-id">
 
                         <div style="display: flex; gap: 12px; margin-top: 24px;">
-                            <button type="submit" class="btn btn-primary btn-lg" id="submit-property-btn">
+                            <button type="button" class="btn btn-primary btn-lg" id="submit-property-btn" onclick="saveProperty(event)">
                                 ✓ Save Property
                             </button>
                             <button type="button" class="btn btn-secondary btn-lg" onclick="resetPropertyForm()">
@@ -441,7 +441,7 @@
                 </div>
 
                 <div class="card">
-                    <form id="employee-form" onsubmit="saveEmployee(event)">
+                    <form id="employee-form">
                         <div class="form-grid">
                             <div class="form-group">
                                 <label class="form-label required">Employee ID</label>
@@ -480,7 +480,7 @@
                         <input type="hidden" id="employee-edit-id">
 
                         <div style="display: flex; gap: 12px; margin-top: 24px;">
-                            <button type="submit" class="btn btn-primary btn-lg" id="submit-employee-btn">
+                            <button type="button" class="btn btn-primary btn-lg" id="submit-employee-btn" onclick="saveEmployee(event)">
                                 ✓ Save Employee
                             </button>
                             <button type="button" class="btn btn-secondary btn-lg" onclick="resetEmployeeForm()">
@@ -499,56 +499,40 @@
     <script src="app.js"></script>
 
     <script>
-        // 1. Check Login Status on Page Load
+        // Login Logic
         document.addEventListener('DOMContentLoaded', () => {
             const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
             
             if (isLoggedIn) {
-                // If logged in: Hide Login, Show Main App
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('main-app').style.display = 'flex';
             } else {
-                // If NOT logged in: Show Login, Hide Main App
                 document.getElementById('login-view').style.display = 'flex';
                 document.getElementById('main-app').style.display = 'none';
             }
         });
 
-        // 2. Handle Login Submission
         function handleLogin(event) {
-            event.preventDefault(); // Stop form from refreshing
+            event.preventDefault();
             
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
             const errorMsg = document.getElementById('login-error');
 
-            // --- SET YOUR PASSWORD HERE ---
             if (user === 'admin' && pass === '1234') {
-                
-                // Success: Save "Stamp"
                 sessionStorage.setItem('isLoggedIn', 'true');
-                
-                // Switch Views
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('main-app').style.display = 'flex';
-                
-                // Clear inputs
                 document.getElementById('username').value = '';
                 document.getElementById('password').value = '';
                 errorMsg.style.display = 'none';
-                
             } else {
-                // Failure
                 errorMsg.style.display = 'block';
             }
         }
 
-        // 3. Handle Logout
         function handleLogout() {
-            // Remove "Stamp"
             sessionStorage.removeItem('isLoggedIn');
-            
-            // Switch Views Back
             document.getElementById('main-app').style.display = 'none';
             document.getElementById('login-view').style.display = 'flex';
         }
