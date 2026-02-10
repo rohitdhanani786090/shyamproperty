@@ -1,541 +1,1260 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creative Crew - Property Management</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>PropertyPro Manager</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
     
-    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
     <style>
-        /* Login Page Styles */
-        .login-wrapper {
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338ca;
+            --secondary: #64748b;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --background: #f1f5f9;
+            --surface: #ffffff;
+            --text-dark: #0f172a;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-dark);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #1e293b;
+            color: white;
             position: fixed;
-            top: 0;
+            height: 100vh;
             left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            top: 0;
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border-bottom: 1px solid #334155;
             display: flex;
             align-items: center;
-            justify-content: center;
-            z-index: 9999;
+            gap: 10px;
         }
 
-        .login-card {
-            background: white;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
+        .nav-menu {
+            list-style: none;
+            padding: 20px 0;
         }
 
-        .login-logo {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1e3c72;
-            margin-bottom: 8px;
+        .nav-link {
             display: block;
+            padding: 12px 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: 0.2s;
+            cursor: pointer;
         }
 
-        .login-subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 14px;
-        }
-
-        .login-input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 14px;
-            box-sizing: border-box;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 12px;
-            background: #1e3c72;
+        .nav-link:hover, .nav-link.active {
+            background-color: #334155;
             color: white;
+            border-left: 4px solid var(--primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 30px;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        /* Cards & Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Forms */
+        .form-card {
+            background: var(--surface);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-group label {
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        /* Tables */
+        .table-container {
+            background: var(--surface);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        /* Buttons & Badges */
+        .btn {
+            padding: 10px 20px;
             border: none;
             border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
             cursor: pointer;
-            transition: background 0.3s;
+            font-weight: 500;
+            transition: 0.2s;
         }
 
-        .login-btn:hover {
-            background: #2a5298;
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+
+        .btn-secondary { background: #e2e8f0; color: var(--text-dark); }
+        .btn-secondary:hover { background: #cbd5e1; }
+
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn-danger:hover { background: #fecaca; }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
         }
 
-        .error-msg {
-            color: red;
-            font-size: 12px;
+        .badge-sale { background: #dcfce7; color: #166534; }
+        .badge-rent { background: #dbeafe; color: #1e40af; }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters input, .filters select {
+            width: auto;
+            min-width: 200px;
+        }
+
+        /* Recent Properties Grid */
+        .properties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .property-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .property-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .property-card-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .property-card-detail {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .property-card-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-top: 15px;
+        }
+
+        /* Utils */
+        .hidden { display: none !important; }
+        
+        /* Toast */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            min-width: 300px;
+        }
+
+        .toast.success { border-left: 4px solid var(--success); }
+        .toast.error { border-left: 4px solid var(--danger); }
+
+        .toast-close {
+            margin-left: auto;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Mobile Responsive */
+        .mobile-toggle {
             display: none;
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            z-index: 101;
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { margin-left: 0; width: 100%; padding: 15px; padding-top: 60px; }
+            .mobile-toggle { display: block; }
+            .form-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
-
 <body>
 
-    <div id="login-view" class="login-wrapper">
-        <div class="login-card">
-            <div class="login-logo">Creative Crew</div>
-            <p class="login-subtitle">Sign in to manage your properties</p>
-            
-            <form onsubmit="handleLogin(event)">
-                <input type="text" id="username" class="login-input" placeholder="Username" required>
-                <input type="password" id="password" class="login-input" placeholder="Password" required>
-                <button type="submit" class="login-btn">Sign In</button>
-                <p id="login-error" class="error-msg">Invalid Credentials</p>
-            </form>
+    <button class="mobile-toggle" onclick="toggleSidebar()">☰ Menu</button>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            🏢 PropertyPro
         </div>
-    </div>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a class="nav-link" onclick="navigateTo('dashboard')">Dashboard</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="navigateTo('properties')">All Properties</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="navigateTo('add-property')">Add Property</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="navigateTo('employees')">Employees</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" onclick="navigateTo('add-employee')">Add Employee</a>
+            </li>
+        </ul>
+    </aside>
 
-    <div id="main-app" class="app-container" style="display: none;">
-        <button class="mobile-menu-toggle" onclick="toggleSidebar()">
-            ☰
-        </button>
-
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <div class="logo">
-                    <div class="logo-icon">CC</div>
-                    <span>Creative Crew</span>
-                </div>
+    <main class="main-content">
+        
+        <div id="dashboard-page" class="page">
+            <div class="page-header">
+                <h1 class="page-title">Dashboard Overview</h1>
+                <button class="btn btn-primary" onclick="navigateTo('add-property')">+ New Property</button>
             </div>
-            <nav>
-                <ul class="nav-menu">
-                    <li class="nav-item">
-                        <a class="nav-link active" onclick="navigateTo('dashboard')">
-                            <span class="nav-icon">🏠</span>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="navigateTo('properties')">
-                            <span class="nav-icon">🏢</span>
-                            <span>All Properties</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="navigateTo('add-property')">
-                            <span class="nav-icon">➕</span>
-                            <span>Add Property</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="navigateTo('employees')">
-                            <span class="nav-icon">👥</span>
-                            <span>Employees</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="navigateTo('add-employee')">
-                            <span class="nav-icon">👤</span>
-                            <span>Add Employee</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" onclick="exportToExcel()">
-                            <span class="nav-icon">📥</span>
-                            <span>Export to Excel</span>
-                        </a>
-                    </li>
-                </ul>
-            </nav>
-            
-            <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: auto;">
-                <a onclick="handleLogout()" style="color: #ff6b6b; cursor: pointer; display: flex; align-items: center; gap: 10px; text-decoration: none;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    <span>Logout</span>
-                </a>
-            </div>
-        </aside>
 
-        <main class="main-content">
-            <div id="dashboard-page" class="page">
-                <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Welcome to PropertyPro - Your Complete Property Management Solution</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Properties</div>
+                    <div class="stat-value" id="total-properties">0</div>
                 </div>
-
-                <div class="stats-grid">
-                    <div class="stat-card blue">
-                        <div class="stat-header">
-                            <span class="stat-title">Total Properties</span>
-                            <div class="stat-icon blue">🏢</div>
-                        </div>
-                        <div class="stat-value" id="total-properties">0</div>
-                        <div class="stat-label">Active listings</div>
-                    </div>
-
-                    <div class="stat-card green">
-                        <div class="stat-header">
-                            <span class="stat-title">For Sale</span>
-                            <div class="stat-icon green">💰</div>
-                        </div>
-                        <div class="stat-value" id="properties-for-sale">0</div>
-                        <div class="stat-label">Available to purchase</div>
-                    </div>
-
-                    <div class="stat-card orange">
-                        <div class="stat-header">
-                            <span class="stat-title">For Rent</span>
-                            <div class="stat-icon orange">🔑</div>
-                        </div>
-                        <div class="stat-value" id="properties-for-rent">0</div>
-                        <div class="stat-label">Available to rent</div>
-                    </div>
-
-                    <div class="stat-card purple">
-                        <div class="stat-header">
-                            <span class="stat-title">Total Employees</span>
-                            <div class="stat-icon purple">👥</div>
-                        </div>
-                        <div class="stat-value" id="total-employees">0</div>
-                        <div class="stat-label">Team members</div>
-                    </div>
+                <div class="stat-card">
+                    <div class="stat-label">For Sale</div>
+                    <div class="stat-value" id="properties-for-sale">0</div>
                 </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Recent Properties</h2>
-                        <button class="btn btn-primary btn-sm" onclick="navigateTo('properties')">
-                            View All
-                        </button>
-                    </div>
-                    <div id="recent-properties-container"></div>
+                <div class="stat-card">
+                    <div class="stat-label">For Rent</div>
+                    <div class="stat-value" id="properties-for-rent">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Total Employees</div>
+                    <div class="stat-value" id="total-employees">0</div>
                 </div>
             </div>
 
-            <div id="properties-page" class="page hidden">
-                <div class="page-header">
-                    <h1 class="page-title">All Properties</h1>
-                    <p class="page-subtitle">Manage your property listings</p>
+            <h2>Recent Properties</h2>
+            <div id="recent-properties-container" style="margin-top: 20px;">
                 </div>
+        </div>
 
-                <div class="card">
-                    <div class="toolbar">
-                        <div class="search-box">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" class="form-control" placeholder="Search properties..."
-                                id="search-properties" oninput="filterProperties()">
+        <div id="properties-page" class="page hidden">
+            <div class="page-header">
+                <h1 class="page-title">Property Listings</h1>
+                <button class="btn btn-success" onclick="exportToExcel()">Export Excel</button>
+            </div>
+
+            <div class="filters">
+                <input type="text" id="search-properties" placeholder="Search properties...">
+                <select id="filter-listing-type">
+                    <option value="">All Listing Types</option>
+                    <option value="For Sale">For Sale</option>
+                    <option value="For Rent">For Rent</option>
+                </select>
+                <select id="filter-property-type">
+                    <option value="">All Property Types</option>
+                    <option value="Apartment">Apartment</option>
+                    <option value="House">House</option>
+                    <option value="Villa">Villa</option>
+                    <option value="Plot">Plot</option>
+                    <option value="Commercial">Commercial</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Owner</th>
+                            <th>Type</th>
+                            <th>BHK</th>
+                            <th>Location</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Agent</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="properties-table-body">
+                        </tbody>
+                </table>
+                <div id="no-properties-message" class="hidden" style="padding: 20px; text-align: center;">
+                    No properties found.
+                </div>
+            </div>
+        </div>
+
+        <div id="add-property-page" class="page hidden">
+            <div class="page-header">
+                <h1 class="page-title" id="property-form-title">Add New Property</h1>
+                <button class="btn btn-secondary" onclick="navigateTo('properties')">Cancel</button>
+            </div>
+
+            <div class="form-card">
+                <form id="property-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Property Name</label>
+                            <input type="text" id="property-name" required placeholder="e.g. Sunrise Villa">
                         </div>
-                        <select class="form-control" id="filter-listing-type" onchange="filterProperties()"
-                            style="max-width: 200px;">
-                            <option value="">All Listings</option>
-                            <option value="For Sale">For Sale</option>
-                            <option value="For Rent">For Rent</option>
+                        <div class="form-group">
+                            <label>Owner Name</label>
+                            <input type="text" id="owner-name" required placeholder="e.g. John Doe">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Assigned Employee</label>
+                            <select id="assigned-employee" required>
+                                <option value="">Select Employee</option>
+                                </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Listing Type</label>
+                            <div class="radio-group" style="margin-top: 10px;">
+                                <label><input type="radio" name="listing-type" value="For Sale" checked> For Sale</label>
+                                <label><input type="radio" name="listing-type" value="For Rent"> For Rent</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Property Type</label>
+                            <select id="property-type" required>
+                                <option value="Apartment">Apartment</option>
+                                <option value="House">House</option>
+                                <option value="Villa">Villa</option>
+                                <option value="Plot">Plot</option>
+                                <option value="Commercial">Commercial</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>BHK Type</label>
+                            <select id="bhk-type" required>
+                                <option value="1 BHK">1 BHK</option>
+                                <option value="2 BHK">2 BHK</option>
+                                <option value="3 BHK">3 BHK</option>
+                                <option value="4 BHK">4 BHK</option>
+                                <option value="5+ BHK">5+ BHK</option>
+                                <option value="N/A">N/A (Plots/Commercial)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Price (₹)</label>
+                            <input type="number" id="price" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Area (Sq Ft)</label>
+                            <input type="number" id="area-sqft" required min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Location</label>
+                        <input type="text" id="location" required placeholder="e.g. City Center, Mumbai">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="description" rows="4" placeholder="Enter property details..."></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submit-property-btn">✓ Save Property</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="employees-page" class="page hidden">
+            <div class="page-header">
+                <h1 class="page-title">Employees</h1>
+                <button class="btn btn-primary" onclick="navigateTo('add-employee')">+ New Employee</button>
+            </div>
+
+            <div class="filters">
+                <input type="text" id="search-employees" placeholder="Search employees by name, ID or role...">
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Assigned Props</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employees-table-body">
+                        </tbody>
+                </table>
+                <div id="no-employees-message" class="hidden" style="padding: 20px; text-align: center;">
+                    No employees found.
+                </div>
+            </div>
+        </div>
+
+        <div id="add-employee-page" class="page hidden">
+            <div class="page-header">
+                <h1 class="page-title" id="employee-form-title">Add New Employee</h1>
+                <button class="btn btn-secondary" onclick="navigateTo('employees')">Cancel</button>
+            </div>
+
+            <div class="form-card">
+                <form id="employee-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Employee ID</label>
+                            <input type="text" id="employee-id" required placeholder="e.g. EMP001">
+                        </div>
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="employee-name" required placeholder="e.g. Jane Smith">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <input type="tel" id="employee-contact" required placeholder="+91 98765 43210">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="employee-email" required placeholder="jane@example.com">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="employee-role" required>
+                            <option value="Agent">Real Estate Agent</option>
+                            <option value="Manager">Manager</option>
+                            <option value="Admin">Administrator</option>
+                            <option value="Support">Support Staff</option>
                         </select>
-                        <select class="form-control" id="filter-property-type" onchange="filterProperties()"
-                            style="max-width: 200px;">
-                            <option value="">All Types</option>
-                            <option value="Villa">Villa</option>
-                            <option value="Plot">Plot</option>
-                            <option value="Flat">Flat</option>
-                            <option value="Room">Room</option>
-                            <option value="Apartment">Apartment</option>
-                            <option value="House">House</option>
-                            <option value="Commercial">Commercial</option>
-                        </select>
-                        <button class="btn btn-success" onclick="exportToExcel()">
-                            📥 Export Excel
-                        </button>
                     </div>
 
-                    <div class="table-container">
-                        <table class="table" id="properties-table">
-                            <thead>
-                                <tr>
-                                    <th>Property Name</th>
-                                    <th>Owner</th>
-                                    <th>Type</th>
-                                    <th>BHK</th>
-                                    <th>Location</th>
-                                    <th>Price</th>
-                                    <th>Listing</th>
-                                    <th>Employee</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="properties-table-body">
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="no-properties-message" class="empty-state hidden">
-                        <div class="empty-state-icon">📋</div>
-                        <h3>No Properties Found</h3>
-                        <p>Start by adding your first property</p>
-                        <button class="btn btn-primary mt-24" onclick="navigateTo('add-property')">Add Property</button>
-                    </div>
-                </div>
+                    <button type="submit" class="btn btn-primary" id="submit-employee-btn">✓ Save Employee</button>
+                </form>
             </div>
+        </div>
 
-            <div id="add-property-page" class="page hidden">
-                <div class="page-header">
-                    <h1 class="page-title" id="property-form-title">Add New Property</h1>
-                    <p class="page-subtitle">Fill in the property details</p>
-                </div>
-
-                <div class="card">
-                    <form id="property-form">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label required">Property Name</label>
-                                <input type="text" class="form-control" id="property-name" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">Owner Name</label>
-                                <input type="text" class="form-control" id="owner-name" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">Assigned Employee</label>
-                                <select class="form-control" id="assigned-employee" required>
-                                    <option value="">Select Employee</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">Property Type</label>
-                                <select class="form-control" id="property-type" required>
-                                    <option value="">Select Type</option>
-                                    <option value="Villa">Villa</option>
-                                    <option value="Plot">Plot</option>
-                                    <option value="Flat">Flat</option>
-                                    <option value="Room">Room</option>
-                                    <option value="Apartment">Apartment</option>
-                                    <option value="House">House</option>
-                                    <option value="Commercial">Commercial Space</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">BHK Configuration</label>
-                                <select class="form-control" id="bhk-type" required>
-                                    <option value="">Select BHK</option>
-                                    <option value="Studio/BK">Studio/BK Only</option>
-                                    <option value="1BHK">1 BHK</option>
-                                    <option value="2BHK">2 BHK</option>
-                                    <option value="3BHK">3 BHK</option>
-                                    <option value="4BHK">4 BHK</option>
-                                    <option value="5BHK+">5+ BHK</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">Area (sq ft)</label>
-                                <input type="number" class="form-control" id="area-sqft" required min="1">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">Price (₹)</label>
-                                <input type="number" class="form-control" id="price" required min="0">
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">Listing Type</label>
-                                <div class="radio-group">
-                                    <label class="radio-option">
-                                        <input type="radio" name="listing-type" value="For Sale" required>
-                                        <span>For Sale</span>
-                                    </label>
-                                    <label class="radio-option">
-                                        <input type="radio" name="listing-type" value="For Rent" required>
-                                        <span>For Rent</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label class="form-label required">Location</label>
-                                <input type="text" class="form-control" id="location" required>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label class="form-label">Description</label>
-                                <textarea class="form-control" id="description" rows="4"></textarea>
-                            </div>
-                        </div>
-
-                        <input type="hidden" id="property-id">
-
-                        <div style="display: flex; gap: 12px; margin-top: 24px;">
-                            <button type="button" class="btn btn-primary btn-lg" id="submit-property-btn" onclick="saveProperty(event)">
-                                ✓ Save Property
-                            </button>
-                            <button type="button" class="btn btn-secondary btn-lg" onclick="resetPropertyForm()">
-                                Reset Form
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div id="employees-page" class="page hidden">
-                <div class="page-header">
-                    <h1 class="page-title">Employees</h1>
-                    <p class="page-subtitle">Manage your team members</p>
-                </div>
-
-                <div class="card">
-                    <div class="toolbar">
-                        <div class="search-box">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" class="form-control" placeholder="Search employees..."
-                                id="search-employees" oninput="filterEmployees()">
-                        </div>
-                        <button class="btn btn-primary" onclick="navigateTo('add-employee')">
-                            ➕ Add Employee
-                        </button>
-                    </div>
-
-                    <div class="table-container">
-                        <table class="table" id="employees-table">
-                            <thead>
-                                <tr>
-                                    <th>Employee ID</th>
-                                    <th>Name</th>
-                                    <th>Contact</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Properties</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="employees-table-body">
-                            </tbody>
-                        </table>
-                    </div>
-                    <div id="no-employees-message" class="empty-state hidden">
-                        <div class="empty-state-icon">👥</div>
-                        <h3>No Employees Found</h3>
-                        <p>Start by adding your first employee</p>
-                        <button class="btn btn-primary mt-24" onclick="navigateTo('add-employee')">Add Employee</button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="add-employee-page" class="page hidden">
-                <div class="page-header">
-                    <h1 class="page-title" id="employee-form-title">Add New Employee</h1>
-                    <p class="page-subtitle">Fill in the employee details</p>
-                </div>
-
-                <div class="card">
-                    <form id="employee-form">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label required">Employee ID</label>
-                                <input type="text" class="form-control" id="employee-id" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">Employee Name</label>
-                                <input type="text" class="form-control" id="employee-name" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">Contact Number</label>
-                                <input type="tel" class="form-control" id="employee-contact" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label required">Email Address</label>
-                                <input type="email" class="form-control" id="employee-email" required>
-                            </div>
-
-                            <div class="form-group full-width">
-                                <label class="form-label required">Role/Department</label>
-                                <select class="form-control" id="employee-role" required>
-                                    <option value="">Select Role</option>
-                                    <option value="Property Manager">Property Manager</option>
-                                    <option value="Sales Executive">Sales Executive</option>
-                                    <option value="Rental Manager">Rental Manager</option>
-                                    <option value="Admin">Admin</option>
-                                    <option value="Marketing">Marketing</option>
-                                    <option value="Customer Support">Customer Support</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <input type="hidden" id="employee-edit-id">
-
-                        <div style="display: flex; gap: 12px; margin-top: 24px;">
-                            <button type="button" class="btn btn-primary btn-lg" id="submit-employee-btn" onclick="saveEmployee(event)">
-                                ✓ Save Employee
-                            </button>
-                            <button type="button" class="btn btn-secondary btn-lg" onclick="resetEmployeeForm()">
-                                Reset Form
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </main>
-    </div>
+    </main>
 
     <div id="toast-container"></div>
     <div id="modal-container"></div>
 
-    <script src="app.js"></script>
-
     <script>
-        // Login Logic
-        document.addEventListener('DOMContentLoaded', () => {
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-            
-            if (isLoggedIn) {
-                document.getElementById('login-view').style.display = 'none';
-                document.getElementById('main-app').style.display = 'flex';
-            } else {
-                document.getElementById('login-view').style.display = 'flex';
-                document.getElementById('main-app').style.display = 'none';
-            }
-        });
+        // --- Global Data Storage & Counters ---
+        let employees = [];
+        let properties = [];
+        let editingPropertyId = null;
+        let editingEmployeeId = null;
+        let db;
 
-        function handleLogin(event) {
+        // --- Firebase Configuration ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-8DGxz2aABfonDbHvlIwQuicSqckjufc",
+            authDomain: "property-manager-326bf.firebaseapp.com",
+            projectId: "property-manager-326bf",
+            storageBucket: "property-manager-326bf.appspot.com",
+            messagingSenderId: "1060819586713",
+            appId: "1:1060819586713:web:9ec3fcc365d931cb4f7208"
+        };
+
+        // Initialize Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            showToast('Firebase connection successful!', 'success');
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            showToast(`Firebase connection failed: ${error.message}`, 'error');
+        }
+
+        // --- NEW Data Loading Function (Reads from Firestore) ---
+        async function loadInitialData() {
+            if (!db) return;
+            showToast('Loading data from Firebase...', 'info');
+
+            try {
+                const propertySnapshot = await db.collection("properties").get();
+                properties = propertySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                const employeeSnapshot = await db.collection("employees").get();
+                employees = employeeSnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                }));
+
+                showToast('Data loaded successfully!', 'success');
+                updateEmployeeDropdown();
+                updateDashboard();
+                
+                if (!document.getElementById('properties-page').classList.contains('hidden')) {
+                    displayProperties();
+                }
+                if (!document.getElementById('employees-page').classList.contains('hidden')) {
+                    displayEmployees();
+                }
+
+            } catch (error) {
+                console.error("Error loading data from Firestore:", error);
+                showToast(`Error loading data from cloud: ${error.message}`, 'error');
+            }
+        }
+
+        // Navigation
+        function navigateTo(page) {
+            document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+
+            switch (page) {
+                case 'dashboard':
+                    document.getElementById('dashboard-page').classList.remove('hidden');
+                    document.querySelectorAll('.nav-link')[0].classList.add('active');
+                    updateDashboard();
+                    break;
+                case 'properties':
+                    document.getElementById('properties-page').classList.remove('hidden');
+                    document.querySelectorAll('.nav-link')[1].classList.add('active');
+                    displayProperties();
+                    break;
+                case 'add-property':
+                    document.getElementById('add-property-page').classList.remove('hidden');
+                    document.querySelectorAll('.nav-link')[2].classList.add('active');
+                    resetPropertyForm();
+                    break;
+                case 'employees':
+                    document.getElementById('employees-page').classList.remove('hidden');
+                    document.querySelectorAll('.nav-link')[3].classList.add('active');
+                    displayEmployees();
+                    break;
+                case 'add-employee':
+                    document.getElementById('add-employee-page').classList.remove('hidden');
+                    document.querySelectorAll('.nav-link')[4].classList.add('active');
+                    resetEmployeeForm();
+                    break;
+            }
+
+            if (window.innerWidth <= 768) {
+                document.getElementById('sidebar').classList.remove('open');
+            }
+        }
+
+        // Toggle Sidebar for Mobile
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Update Dashboard Statistics
+        function updateDashboard() {
+            document.getElementById('total-properties').textContent = properties.length;
+            document.getElementById('properties-for-sale').textContent = properties.filter(p => p.listingType === 'For Sale').length;
+            document.getElementById('properties-for-rent').textContent = properties.filter(p => p.listingType === 'For Rent').length;
+            document.getElementById('total-employees').textContent = employees.length;
+
+            const recentContainer = document.getElementById('recent-properties-container');
+            const sortedProperties = [...properties].sort((a, b) => {
+                const dateA = a.dateAdded && typeof a.dateAdded.toDate === 'function' ? a.dateAdded.toDate().getTime() : new Date(a.dateAdded).getTime();
+                const dateB = b.dateAdded && typeof b.dateAdded.toDate === 'function' ? b.dateAdded.toDate().getTime() : new Date(b.dateAdded).getTime();
+                return dateB - dateA;
+            });
+            const recentProperties = sortedProperties.slice(0, 5);
+
+            if (recentProperties.length === 0) {
+                recentContainer.innerHTML = '<div class="property-card" style="text-align:center; color: #64748b;">No properties added yet</div>';
+            } else {
+                recentContainer.innerHTML = '<div class="properties-grid">' +
+                    recentProperties.map(property => `
+                        <div class="property-card">
+                            <div class="property-card-header">
+                                <div>
+                                    <div class="property-card-title">${property.propertyName}</div>
+                                    <div class="property-card-detail">📍 ${property.location}</div>
+                                </div>
+                                <span class="badge ${property.listingType === 'For Sale' ? 'badge-sale' : 'badge-rent'}">
+                                    ${property.listingType}
+                                </span>
+                            </div>
+                            <div class="property-card-detail">🏠 ${property.propertyType} • ${property.bhkType}</div>
+                            <div class="property-card-detail">📐 ${property.areaSqft} sq ft</div>
+                            <div class="property-card-detail">👤 ${property.assignedEmployee}</div>
+                            <div class="property-card-price">₹${formatNumber(property.price)}</div>
+                        </div>
+                    `).join('') +
+                    '</div>';
+            }
+        }
+
+        // Format number with commas
+        function formatNumber(num) {
+            if (typeof num !== 'number' && typeof num !== 'string') return 'N/A';
+            const numberValue = typeof num === 'string' ? parseFloat(num.replace(/,/g, '')) : num;
+            if (isNaN(numberValue)) return 'N/A';
+            return numberValue.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        // Update Employee Dropdown
+        function updateEmployeeDropdown() {
+            const select = document.getElementById('assigned-employee');
+            if (select) {
+                select.innerHTML = '<option value="">Select Employee</option>' +
+                    employees.map(emp => `<option value="${emp.name}">${emp.name} (${emp.employeeId})</option>`).join('');
+            }
+        }
+
+        // --- Save Property (Writes to Firestore) ---
+        async function saveProperty(event) {
             event.preventDefault();
-            
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-            const errorMsg = document.getElementById('login-error');
+            if (!db) return showToast('Database connection failed. Cannot save.', 'error');
 
-            if (user === 'admin' && pass === '1234') {
-                sessionStorage.setItem('isLoggedIn', 'true');
-                document.getElementById('login-view').style.display = 'none';
-                document.getElementById('main-app').style.display = 'flex';
-                document.getElementById('username').value = '';
-                document.getElementById('password').value = '';
-                errorMsg.style.display = 'none';
-            } else {
-                errorMsg.style.display = 'block';
+            const propertyData = {
+                propertyName: document.getElementById('property-name').value,
+                ownerName: document.getElementById('owner-name').value,
+                assignedEmployee: document.getElementById('assigned-employee').value,
+                bhkType: document.getElementById('bhk-type').value,
+                price: parseFloat(document.getElementById('price').value) || 0,
+                listingType: document.querySelector('input[name="listing-type"]:checked')?.value || '',
+                propertyType: document.getElementById('property-type').value,
+                areaSqft: parseInt(document.getElementById('area-sqft').value) || 0,
+                location: document.getElementById('location').value,
+                description: document.getElementById('description').value,
+                dateAdded: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            try {
+                if (editingPropertyId) {
+                    await db.collection("properties").doc(editingPropertyId).update(propertyData);
+                    showToast('Property updated successfully in cloud!', 'success');
+                    editingPropertyId = null;
+                } else {
+                    await db.collection("properties").add(propertyData);
+                    showToast('Property added successfully to cloud!', 'success');
+                }
+            } catch (error) {
+                console.error("Error saving property:", error);
+                showToast(`Failed to save property: ${error.message}`, 'error');
+            }
+
+            resetPropertyForm();
+            await loadInitialData();
+            navigateTo('properties');
+        }
+
+        // Reset Property Form
+        function resetPropertyForm() {
+            const form = document.getElementById('property-form');
+            if (form) form.reset();
+            editingPropertyId = null;
+            document.getElementById('property-form-title').textContent = 'Add New Property';
+            document.getElementById('submit-property-btn').innerHTML = '✓ Save Property';
+        }
+
+        // Edit Property
+        function editProperty(id) {
+            const property = properties.find(p => p.id === id);
+            if (!property) return;
+
+            editingPropertyId = id;
+            document.getElementById('property-name').value = property.propertyName;
+            document.getElementById('owner-name').value = property.ownerName;
+            document.getElementById('assigned-employee').value = property.assignedEmployee;
+            document.getElementById('bhk-type').value = property.bhkType;
+            document.getElementById('price').value = property.price;
+            document.querySelector(`input[name="listing-type"][value="${property.listingType}"]`).checked = true;
+            document.getElementById('property-type').value = property.propertyType;
+            document.getElementById('area-sqft').value = property.areaSqft;
+            document.getElementById('location').value = property.location;
+            document.getElementById('description').value = property.description || '';
+
+            document.getElementById('property-form-title').textContent = 'Edit Property';
+            document.getElementById('submit-property-btn').innerHTML = '✓ Update Property';
+
+            navigateTo('add-property');
+        }
+
+        // --- Delete Property (Deletes from Firestore) ---
+        function deleteProperty(id) {
+            if (!db) return showToast('Database connection failed. Cannot delete.', 'error');
+
+            showConfirmModal(
+                'Delete Property',
+                'Are you sure you want to delete this property?',
+                async () => {
+                    try {
+                        await db.collection("properties").doc(id).delete();
+                        showToast('Property deleted successfully from cloud!', 'success');
+                        await loadInitialData();
+                        displayProperties();
+                    } catch (error) {
+                        console.error("Error deleting property:", error);
+                        showToast(`Failed to delete property: ${error.message}`, 'error');
+                    }
+                }
+            );
+        }
+
+        // Display Properties
+        function displayProperties() {
+            const tbody = document.getElementById('properties-table-body');
+            const noPropertiesMsg = document.getElementById('no-properties-message');
+
+            if (properties.length === 0) {
+                if (tbody) tbody.innerHTML = '';
+                if (noPropertiesMsg) noPropertiesMsg.classList.remove('hidden');
+                return;
+            }
+
+            if (noPropertiesMsg) noPropertiesMsg.classList.add('hidden');
+            if (tbody) {
+                tbody.innerHTML = properties.map(property => `
+                        <tr>
+                            <td><strong>${property.propertyName}</strong></td>
+                            <td>${property.ownerName}</td>
+                            <td>${property.propertyType}</td>
+                            <td>${property.bhkType}</td>
+                            <td>${property.location}</td>
+                            <td><strong>₹${formatNumber(property.price)}</strong></td>
+                            <td><span class="badge ${property.listingType === 'For Sale' ? 'badge-sale' : 'badge-rent'}">${property.listingType}</span></td>
+                            <td>${property.assignedEmployee}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary" onclick="editProperty('${property.id}')" title="Edit">✏️</button>
+                                    <button class="btn btn-danger" onclick="deleteProperty('${property.id}')" title="Delete">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
             }
         }
 
-        function handleLogout() {
-            sessionStorage.removeItem('isLoggedIn');
-            document.getElementById('main-app').style.display = 'none';
-            document.getElementById('login-view').style.display = 'flex';
+        // Filter Properties
+        function filterProperties() {
+            const searchTerm = document.getElementById('search-properties')?.value.toLowerCase() || '';
+            const listingTypeFilter = document.getElementById('filter-listing-type')?.value || '';
+            const propertyTypeFilter = document.getElementById('filter-property-type')?.value || '';
+
+            const filtered = properties.filter(property => {
+                const matchesSearch = property.propertyName.toLowerCase().includes(searchTerm) ||
+                    property.ownerName.toLowerCase().includes(searchTerm) ||
+                    property.location.toLowerCase().includes(searchTerm) ||
+                    property.assignedEmployee.toLowerCase().includes(searchTerm);
+                const matchesListingType = !listingTypeFilter || property.listingType === listingTypeFilter;
+                const matchesPropertyType = !propertyTypeFilter || property.propertyType === propertyTypeFilter;
+
+                return matchesSearch && matchesListingType && matchesPropertyType;
+            });
+
+            const tbody = document.getElementById('properties-table-body');
+            if (!tbody) return;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding: 30px;">No matching properties found</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(property => `
+                        <tr>
+                            <td><strong>${property.propertyName}</strong></td>
+                            <td>${property.ownerName}</td>
+                            <td>${property.propertyType}</td>
+                            <td>${property.bhkType}</td>
+                            <td>${property.location}</td>
+                            <td><strong>₹${formatNumber(property.price)}</strong></td>
+                            <td><span class="badge ${property.listingType === 'For Sale' ? 'badge-sale' : 'badge-rent'}">${property.listingType}</span></td>
+                            <td>${property.assignedEmployee}</td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary" onclick="editProperty('${property.id}')">✏️</button>
+                                    <button class="btn btn-danger" onclick="deleteProperty('${property.id}')">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `).join('');
+            }
         }
+
+        // Export to Excel
+        function exportToExcel() {
+            if (typeof XLSX === 'undefined' || properties.length === 0) {
+                showToast('No properties to export or XLSX library is missing!', 'error');
+                return;
+            }
+
+            const excelData = properties.map(property => ({
+                'Property Name': property.propertyName,
+                'Owner Name': property.ownerName,
+                'Property Type': property.propertyType,
+                'BHK Configuration': property.bhkType,
+                'Area (sq ft)': property.areaSqft,
+                'Location': property.location,
+                'Price (₹)': property.price,
+                'Listing Type': property.listingType,
+                'Assigned Employee': property.assignedEmployee,
+                'Description': property.description || '',
+                'Date Added': (property.dateAdded && typeof property.dateAdded.toDate === 'function')
+                    ? property.dateAdded.toDate().toLocaleDateString()
+                    : (property.dateAdded ? new Date(property.dateAdded).toLocaleDateString() : 'N/A')
+            }));
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            ws['!cols'] = [{ wch: 25 }, { wch: 20 }, { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 30 }, { wch: 15 }, { wch: 12 }, { wch: 20 }, { wch: 40 }, { wch: 12 }];
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Properties');
+            XLSX.writeFile(wb, `PropertyPro_Data_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showToast('Excel file downloaded successfully!', 'success');
+        }
+
+        // --- Save Employee ---
+        async function saveEmployee(event) {
+            event.preventDefault();
+            if (!db) return showToast('Database connection failed.', 'error');
+
+            const employeeData = {
+                employeeId: document.getElementById('employee-id').value,
+                name: document.getElementById('employee-name').value,
+                contact: document.getElementById('employee-contact').value,
+                email: document.getElementById('employee-email').value,
+                role: document.getElementById('employee-role').value
+            };
+
+            try {
+                if (editingEmployeeId) {
+                    const oldName = employees.find(e => e.id === editingEmployeeId)?.name;
+                    await db.collection("employees").doc(editingEmployeeId).update(employeeData);
+                    showToast('Employee updated successfully!', 'success');
+
+                    if (oldName && oldName !== employeeData.name) {
+                        const batch = db.batch();
+                        properties.filter(p => p.assignedEmployee === oldName).forEach(property => {
+                            const propertyRef = db.collection("properties").doc(property.id);
+                            batch.update(propertyRef, { assignedEmployee: employeeData.name });
+                        });
+                        await batch.commit();
+                    }
+                    editingEmployeeId = null;
+                } else {
+                    await db.collection("employees").add(employeeData);
+                    showToast('Employee added successfully!', 'success');
+                }
+            } catch (error) {
+                console.error("Error saving employee:", error);
+                showToast(`Failed to save employee: ${error.message}`, 'error');
+            }
+
+            resetEmployeeForm();
+            await loadInitialData();
+            navigateTo('employees');
+        }
+
+        // Reset Employee Form
+        function resetEmployeeForm() {
+            const form = document.getElementById('employee-form');
+            if (form) form.reset();
+            editingEmployeeId = null;
+            document.getElementById('employee-form-title').textContent = 'Add New Employee';
+            document.getElementById('submit-employee-btn').innerHTML = '✓ Save Employee';
+        }
+
+        // Edit Employee
+        function editEmployee(id) {
+            const employee = employees.find(e => e.id === id);
+            if (!employee) return;
+
+            editingEmployeeId = id;
+            document.getElementById('employee-id').value = employee.employeeId;
+            document.getElementById('employee-name').value = employee.name;
+            document.getElementById('employee-contact').value = employee.contact;
+            document.getElementById('employee-email').value = employee.email;
+            document.getElementById('employee-role').value = employee.role;
+
+            document.getElementById('employee-form-title').textContent = 'Edit Employee';
+            document.getElementById('submit-employee-btn').innerHTML = '✓ Update Employee';
+
+            navigateTo('add-employee');
+        }
+
+        // --- Delete Employee ---
+        function deleteEmployee(id) {
+            if (!db) return showToast('Database connection failed.', 'error');
+            const employee = employees.find(e => e.id === id);
+            if (!employee) return;
+
+            const propertiesCount = properties.filter(p => p.assignedEmployee === employee.name).length;
+            if (propertiesCount > 0) {
+                showToast(`Cannot delete employee with ${propertiesCount} assigned properties!`, 'error');
+                return;
+            }
+
+            showConfirmModal(
+                'Delete Employee',
+                `Are you sure you want to delete ${employee.name}?`,
+                async () => {
+                    try {
+                        await db.collection("employees").doc(id).delete();
+                        showToast('Employee deleted successfully!', 'success');
+                        await loadInitialData();
+                        displayEmployees();
+                    } catch (error) {
+                        console.error("Error deleting employee:", error);
+                        showToast(`Failed to delete employee: ${error.message}`, 'error');
+                    }
+                }
+            );
+        }
+
+        // Display Employees
+        function displayEmployees() {
+            const tbody = document.getElementById('employees-table-body');
+            const noEmployeesMsg = document.getElementById('no-employees-message');
+
+            if (employees.length === 0) {
+                if (tbody) tbody.innerHTML = '';
+                if (noEmployeesMsg) noEmployeesMsg.classList.remove('hidden');
+                return;
+            }
+
+            if (noEmployeesMsg) noEmployeesMsg.classList.add('hidden');
+            if (tbody) {
+                tbody.innerHTML = employees.map(employee => {
+                    const propertyCount = properties.filter(p => p.assignedEmployee === employee.name).length;
+                    return `
+                        <tr>
+                            <td><strong>${employee.employeeId}</strong></td>
+                            <td>${employee.name}</td>
+                            <td>${employee.contact}</td>
+                            <td>${employee.email}</td>
+                            <td>${employee.role}</td>
+                            <td><span class="badge badge-sale">${propertyCount}</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary" onclick="editEmployee('${employee.id}')">✏️</button>
+                                    <button class="btn btn-danger" onclick="deleteEmployee('${employee.id}')">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Filter Employees
+        function filterEmployees() {
+            const searchTerm = document.getElementById('search-employees')?.value.toLowerCase() || '';
+
+            const filtered = employees.filter(employee => {
+                return employee.name.toLowerCase().includes(searchTerm) ||
+                    employee.employeeId.toLowerCase().includes(searchTerm) ||
+                    employee.email.toLowerCase().includes(searchTerm) ||
+                    employee.role.toLowerCase().includes(searchTerm);
+            });
+
+            const tbody = document.getElementById('employees-table-body');
+            if (!tbody) return;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 30px;">No matching employees found</td></tr>';
+            } else {
+                tbody.innerHTML = filtered.map(employee => {
+                    const propertyCount = properties.filter(p => p.assignedEmployee === employee.name).length;
+                    return `
+                        <tr>
+                            <td><strong>${employee.employeeId}</strong></td>
+                            <td>${employee.name}</td>
+                            <td>${employee.contact}</td>
+                            <td>${employee.email}</td>
+                            <td>${employee.role}</td>
+                            <td><span class="badge badge-sale">${propertyCount}</span></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn btn-secondary" onclick="editEmployee('${employee.id}')">✏️</button>
+                                    <button class="btn btn-danger" onclick="deleteEmployee('${employee.id}')">🗑️</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Toast
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${message}</span><span class="toast-close" onclick="this.parentElement.remove()">×</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 4000);
+        }
+
+        // Confirm Modal
+        function showConfirmModal(title, message, onConfirm) {
+            const container = document.getElementById('modal-container');
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal">
+                    <div class="modal-header">
+                        <h2 style="font-size:1.5rem;font-weight:700;">${title}</h2>
+                        <button style="border:none;background:none;font-size:1.5rem;cursor:pointer;" onclick="closeModal()">×</button>
+                    </div>
+                    <div style="margin-bottom:20px;">${message}</div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-danger" id="confirm-modal-btn">Confirm</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(modal);
+
+            window.currentModalCallback = onConfirm;
+
+            document.getElementById('confirm-modal-btn').onclick = function() {
+                if (window.currentModalCallback) window.currentModalCallback();
+                closeModal();
+            };
+        }
+
+        function closeModal() {
+            document.getElementById('modal-container').innerHTML = '';
+            window.currentModalCallback = null;
+        }
+
+        // Initialize App
+        window.onload = function () {
+            document.getElementById('property-form').addEventListener('submit', saveProperty);
+            document.getElementById('employee-form').addEventListener('submit', saveEmployee);
+            document.getElementById('search-properties').addEventListener('input', filterProperties);
+            document.getElementById('filter-listing-type').addEventListener('change', filterProperties);
+            document.getElementById('filter-property-type').addEventListener('change', filterProperties);
+            document.getElementById('search-employees').addEventListener('input', filterEmployees);
+
+            // Expose to window for onclick handlers
+            window.navigateTo = navigateTo;
+            window.toggleSidebar = toggleSidebar;
+            window.editProperty = editProperty;
+            window.deleteProperty = deleteProperty;
+            window.editEmployee = editEmployee;
+            window.deleteEmployee = deleteEmployee;
+            window.exportToExcel = exportToExcel;
+            window.closeModal = closeModal;
+
+            loadInitialData();
+            navigateTo('dashboard');
+        };
     </script>
 </body>
 </html>
