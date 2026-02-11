@@ -4,20 +4,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creative Crew - Property Management</title>
+    <title>Creative Crew - Central Management</title>
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Libraries -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-storage-compat.js"></script>
-    <!-- Chart.js for Graphs -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
     <style>
@@ -168,7 +165,7 @@
         .stat-card.orange .stat-icon { background: #fff7ed; color: #f97316; }
         .stat-card.purple .stat-icon { background: #faf5ff; color: #a855f7; }
 
-        /* Charts Section - UPDATED for Single Column */
+        /* Charts Section */
         .charts-container { display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px; animation: fadeIn 0.7s ease-out; }
         .chart-card { min-height: 450px; display: flex; flex-direction: column; justify-content: center; background: white; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: var(--card-shadow); }
 
@@ -187,6 +184,7 @@
         .badge-sale { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
         .badge-rent { background: #fff7ed; color: #ea580c; border: 1px solid #fed7aa; }
         .badge-sold { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        .badge-studio { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
 
         /* Buttons */
         .btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
@@ -232,7 +230,6 @@
 
 <body>
 
-    <!-- === 1. LUXURY LOGIN VIEW === -->
     <div id="login-view" class="login-wrapper">
         <div class="cinematic-bg"></div>
         <div class="overlay"></div>
@@ -240,7 +237,7 @@
         <div class="login-card">
             <div class="brand-header">
                 <div class="brand-logo">CREATIVE CREW</div>
-                <div class="brand-tagline">Elite Property Management</div>
+                <div class="brand-tagline">Central Management System</div>
             </div>
             
             <form onsubmit="handleLogin(event)">
@@ -273,7 +270,6 @@
         </div>
     </div>
 
-    <!-- === 2. SOFTWARE DASHBOARD === -->
     <div id="main-app" class="app-container" style="display: none;">
         <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
 
@@ -285,8 +281,8 @@
             <nav>
                 <ul class="nav-menu">
                     <li class="nav-item"><a class="nav-link active" onclick="navigateTo('dashboard')"><span class="nav-icon">🏠</span> Dashboard</a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('properties')"><span class="nav-icon">🏢</span> Properties</a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('add-property')"><span class="nav-icon">➕</span> Add Listing</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('properties')"><span class="nav-icon">🗂️</span> All Data</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('add-property')"><span class="nav-icon">➕</span> Add Data</a></li>
                     <li class="nav-item"><a class="nav-link" onclick="navigateTo('employees')"><span class="nav-icon">👥</span> Team</a></li>
                     <li class="nav-item"><a class="nav-link" onclick="navigateTo('add-employee')"><span class="nav-icon">👤</span> Add Agent</a></li>
                     <li class="nav-item"><a class="nav-link" onclick="exportToExcel()"><span class="nav-icon">📥</span> Export Data</a></li>
@@ -300,37 +296,35 @@
         </aside>
 
         <main class="main-content">
-            <!-- Dashboard View -->
             <div id="dashboard-page" class="page">
                 <div class="page-header">
                     <h1 class="page-title">Dashboard Overview</h1>
-                    <p class="page-subtitle">Welcome back, Admin. Here is your business at a glance.</p>
+                    <p class="page-subtitle">Multi-Site Management: Creative Studio, Stays+, and Events</p>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card blue">
-                        <div class="stat-header"><span class="stat-title">Total Properties</span><div class="stat-icon">🏢</div></div>
+                        <div class="stat-header"><span class="stat-title">Total Records</span><div class="stat-icon">📊</div></div>
                         <div class="stat-value" id="total-properties">0</div>
                     </div>
                     <div class="stat-card green">
-                        <div class="stat-header"><span class="stat-title">Active for Sale</span><div class="stat-icon">💰</div></div>
-                        <div class="stat-value" id="properties-for-sale">0</div>
+                        <div class="stat-header"><span class="stat-title">Creative Studio</span><div class="stat-icon">🎨</div></div>
+                        <div class="stat-value" id="stats-studio">0</div>
                     </div>
                     <div class="stat-card orange">
-                        <div class="stat-header"><span class="stat-title">Active for Rent</span><div class="stat-icon">🔑</div></div>
-                        <div class="stat-value" id="properties-for-rent">0</div>
+                        <div class="stat-header"><span class="stat-title">Creative Stays+</span><div class="stat-icon">🛌</div></div>
+                        <div class="stat-value" id="stats-stays">0</div>
                     </div>
                     <div class="stat-card purple">
-                        <div class="stat-header"><span class="stat-title">Total Employees</span><div class="stat-icon">👥</div></div>
-                        <div class="stat-value" id="total-employees">0</div>
+                        <div class="stat-header"><span class="stat-title">Creative Events</span><div class="stat-icon">🎉</div></div>
+                        <div class="stat-value" id="stats-events">0</div>
                     </div>
                 </div>
 
-                <!-- NEW: Single Consolidated Graph -->
                 <div class="charts-container">
                     <div class="card chart-card">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                            <h3 class="card-title" style="font-size: 18px; font-weight: 700; color: #1e3c72;">Portfolio Performance</h3>
-                            <div style="font-size:12px; color:#64748b;">Last 6 Months Trend</div>
+                            <h3 class="card-title" style="font-size: 18px; font-weight: 700; color: #1e3c72;">Business Performance</h3>
+                            <div style="font-size:12px; color:#64748b;">Records Added (Last 6 Months)</div>
                         </div>
                         <div style="position: relative; height: 350px; width: 100%;">
                             <canvas id="mainChart"></canvas>
@@ -339,20 +333,24 @@
                 </div>
             </div>
 
-            <!-- Properties List View -->
             <div id="properties-page" class="page hidden">
-                <div class="page-header"><h1 class="page-title">All Properties</h1><p class="page-subtitle">Manage your property portfolio</p></div>
+                <div class="page-header"><h1 class="page-title">All Data Records</h1><p class="page-subtitle">Manage listings for all three websites</p></div>
                 <div class="card">
                     <div class="toolbar">
-                        <input type="text" class="form-control search-box" placeholder="Search by name or location..." id="search-properties" oninput="filterProperties()">
-                        <select class="form-control" style="width: 150px;" id="filter-listing-type" onchange="filterProperties()">
-                            <option value="">All Types</option><option value="For Sale">For Sale</option><option value="For Rent">For Rent</option>
+                        <input type="text" class="form-control search-box" placeholder="Search by name or category..." id="search-properties" oninput="filterProperties()">
+                        
+                        <select class="form-control" style="width: 200px;" id="filter-business" onchange="filterProperties()">
+                            <option value="">All Websites</option>
+                            <option value="Creative Studio">Creative Studio</option>
+                            <option value="Creative Stays+">Creative Stays+</option>
+                            <option value="Creative Events">Creative Events</option>
+                            <option value="Real Estate">Real Estate (General)</option>
                         </select>
+
                         <select class="form-control" style="width: 150px;" id="filter-status" onchange="filterProperties()">
                             <option value="">All Status</option>
                             <option value="Available">Available</option>
-                            <option value="Sold">Sold</option>
-                            <option value="Rented">Rented</option>
+                            <option value="Booked/Sold">Booked/Sold</option>
                         </select>
                         <input type="file" id="excel-upload" accept=".xlsx" onchange="handleFileSelect(event)">
                         <button class="btn btn-secondary" onclick="downloadTemplate()">Template</button>
@@ -360,23 +358,21 @@
                     </div>
                     <div class="table-container">
                         <table class="table">
-                            <thead><tr><th>Image</th><th>Property Name</th><th>Owner</th><th>Type</th><th>Price</th><th>Listing</th><th>Status</th><th>Actions</th></tr></thead>
+                            <thead><tr><th>Image</th><th>Name/Title</th><th>Business Category</th><th>Service/Type</th><th>Price/Rate</th><th>Status</th><th>Actions</th></tr></thead>
                             <tbody id="properties-table-body"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Add/Edit Property View -->
             <div id="add-property-page" class="page hidden">
                 <div class="page-header">
-                    <h1 class="page-title" id="form-title">New Property</h1>
-                    <p class="page-subtitle">Add details for the new listing</p>
+                    <h1 class="page-title" id="form-title">New Record</h1>
+                    <p class="page-subtitle">Add details for any of the 3 websites</p>
                 </div>
                 <div class="card">
                     <form id="property-form">
                         <div class="form-grid">
-                            <!-- Image Preview Column -->
                             <div class="full-width" style="display:flex; justify-content:center;">
                                 <div class="image-preview" id="image-preview-box">
                                     <div class="preview-placeholder">
@@ -387,47 +383,55 @@
                                 </div>
                             </div>
 
-                            <div class="form-group"><label class="form-label">Property Name</label><input type="text" class="form-control" id="property-name" required></div>
-                            <div class="form-group"><label class="form-label">Owner Name</label><input type="text" class="form-control" id="owner-name" required></div>
+                            <div class="form-group"><label class="form-label">Name / Title</label><input type="text" class="form-control" id="property-name" required placeholder="e.g., Luxury Room 101 or Modern Interior Design"></div>
+                            <div class="form-group"><label class="form-label">Client / Owner Name</label><input type="text" class="form-control" id="owner-name" required></div>
                             <div class="form-group"><label class="form-label">Image URL</label><input type="text" class="form-control" id="property-image" placeholder="https://..." oninput="updatePreview()" required></div>
-                            <div class="form-group"><label class="form-label">Assigned Agent</label><select class="form-control" id="assigned-employee" required><option value="">Select Agent</option></select></div>
-                            <div class="form-group"><label class="form-label">Type</label><select class="form-control" id="property-type"><option>Villa</option><option>Apartment</option><option>Plot</option><option>Commercial</option></select></div>
-                            <div class="form-group"><label class="form-label">Configuration</label><select class="form-control" id="bhk-type"><option>1 BHK</option><option>2 BHK</option><option>3 BHK</option><option>4+ BHK</option></select></div>
-                            <div class="form-group"><label class="form-label">Area (sq ft)</label><input type="number" class="form-control" id="area-sqft" required></div>
-                            <div class="form-group"><label class="form-label">Price (₹)</label><input type="number" class="form-control" id="price" required></div>
+                            <div class="form-group"><label class="form-label">Assigned Employee</label><select class="form-control" id="assigned-employee" required><option value="">Select Agent</option></select></div>
                             
-                            <div class="form-group">
-                                <label class="form-label">Listing Type</label>
-                                <div style="display:flex; gap:20px; margin-top:10px;">
-                                    <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="listing-type" value="For Sale" checked> For Sale</label>
-                                    <label style="display:flex;align-items:center;gap:6px;"><input type="radio" name="listing-type" value="For Rent"> For Rent</label>
-                                </div>
+                            <div class="form-group full-width" style="background: #f0f9ff; padding: 10px; border-radius: 8px; border: 1px dashed #bae6fd;">
+                                <label class="form-label" style="color: #0369a1;">Select Website / Business Vertical</label>
+                                <select class="form-control" id="business-category" onchange="updateTypeOptions()" style="border-color: #0369a1; font-weight: 600;">
+                                    <option value="" disabled selected>-- Choose Business --</option>
+                                    <option value="Creative Studio">Creative Studio (Construction/Interiors)</option>
+                                    <option value="Creative Stays+">Creative Stays+ (Hostels/Hotels)</option>
+                                    <option value="Creative Events">Creative Events (Banquet/Gardens)</option>
+                                    <option value="Real Estate">Real Estate (General)</option>
+                                </select>
                             </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Service / Type</label>
+                                <select class="form-control" id="property-type">
+                                    <option>Select Business First</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group"><label class="form-label">Specification (BHK/Size/Capacity)</label><input type="text" class="form-control" id="bhk-type" placeholder="e.g., 2 BHK or 500 Guests"></div>
+                            <div class="form-group"><label class="form-label">Area / Dimensions</label><input type="text" class="form-control" id="area-sqft" placeholder="e.g. 1200 sqft"></div>
+                            <div class="form-group"><label class="form-label">Price / Rate (₹)</label><input type="number" class="form-control" id="price" required></div>
                             
-                            <!-- NEW: Status Field -->
                             <div class="form-group">
                                 <label class="form-label">Current Status</label>
                                 <select class="form-control" id="property-status">
                                     <option value="Available">Available</option>
-                                    <option value="Sold">Sold</option>
-                                    <option value="Rented">Rented</option>
+                                    <option value="Booked/Sold">Booked / Sold</option>
+                                    <option value="Maintenance">Under Maintenance</option>
                                 </select>
                             </div>
 
                             <div class="full-width form-group"><label class="form-label">Location</label><input type="text" class="form-control" id="location" required></div>
-                            <div class="full-width form-group"><label class="form-label">Description</label><textarea class="form-control" id="description" rows="3"></textarea></div>
+                            <div class="full-width form-group"><label class="form-label">Description / Service Details</label><textarea class="form-control" id="description" rows="3"></textarea></div>
                         </div>
                         <div style="margin-top:24px; display:flex; gap:12px;">
-                            <button type="button" class="btn btn-primary" id="submit-property-btn" onclick="saveProperty(event)">Save Property</button>
+                            <button type="button" class="btn btn-primary" id="submit-property-btn" onclick="saveProperty(event)">Save Record</button>
                             <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Employees View -->
             <div id="employees-page" class="page hidden">
-                <div class="page-header"><h1 class="page-title">Employees</h1><p class="page-subtitle">Manage your real estate agents</p></div>
+                <div class="page-header"><h1 class="page-title">Employees</h1><p class="page-subtitle">Manage your staff for all businesses</p></div>
                 <div class="card">
                     <div class="toolbar"><button class="btn btn-primary" onclick="navigateTo('add-employee')">Add New Agent</button></div>
                     <div class="table-container">
@@ -436,7 +440,6 @@
                 </div>
             </div>
 
-            <!-- Add Employee View -->
             <div id="add-employee-page" class="page hidden">
                 <div class="page-header"><h1 class="page-title">Register Agent</h1></div>
                 <div class="card">
@@ -448,13 +451,12 @@
                             <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-control" id="employee-email" required></div>
                             <div class="full-width form-group"><label class="form-label">Role</label>
                                 <select class="form-control" id="employee-role">
-                                    <option>Real Estate Agent</option>
-                                    <option>Property Manager</option>
-                                    <option>Senior Broker</option>
+                                    <option>Manager - Studio</option>
+                                    <option>Manager - Stays</option>
+                                    <option>Manager - Events</option>
+                                    <option>Sales Agent</option>
                                     <option>Office Admin</option>
                                     <option>Legal Advisor</option>
-                                    <option>Marketing Specialist</option>
-                                    <option>Intern</option>
                                 </select>
                             </div>
                         </div>
@@ -484,7 +486,35 @@
         let properties = [];
         let employees = [];
         let editingPropertyId = null;
-        let mainChartInstance = null; // Renamed
+        let mainChartInstance = null;
+
+        // --- NEW: BUSINESS CATEGORY MAPPING ---
+        const BUSINESS_DATA = {
+            "Creative Studio": [
+                "Construction", 
+                "Interiors", 
+                "Home paints", 
+                "Electrician", 
+                "Plumbing", 
+                "Furniture"
+            ],
+            "Creative Stays+": [
+                "Hostels / PG", 
+                "Hotels", 
+                "Creative BNB"
+            ],
+            "Creative Events": [
+                "Banquet halls", 
+                "Marriage gardens", 
+                "Farm houses"
+            ],
+            "Real Estate": [
+                "Villa",
+                "Apartment",
+                "Plot",
+                "Commercial"
+            ]
+        };
 
         // --- 3. LOGIN LOGIC ---
         function handleLogin(e) {
@@ -538,6 +568,7 @@
         // --- 4. DATA LOGIC ---
         async function loadInitialData() {
             try {
+                // We use the same 'properties' collection but now it holds data for all 3 sites
                 const pSnap = await db.collection("properties").orderBy("dateAdded", "desc").get();
                 properties = pSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 const eSnap = await db.collection("employees").get();
@@ -557,16 +588,17 @@
             const currentMonthIndex = new Date().getMonth();
             
             const labels = [];
-            const salesData = [];
-            const rentalsData = [];
+            const studioData = [];
+            const staysData = [];
+            const eventsData = [];
             
-            // Generate labels for last 6 months in correct order
             for (let i = 5; i >= 0; i--) {
                 let d = new Date();
                 d.setMonth(currentMonthIndex - i);
                 labels.push(months[d.getMonth()]);
-                salesData.push(0);
-                rentalsData.push(0);
+                studioData.push(0);
+                staysData.push(0);
+                eventsData.push(0);
             }
 
             properties.forEach(p => {
@@ -574,30 +606,21 @@
                 if(p.dateAdded) {
                     date = p.dateAdded.toDate ? p.dateAdded.toDate() : new Date(p.dateAdded);
                 } else {
-                     // Fallback for imported data without date - assign to current month so it shows up
                     date = new Date();
                 }
                 
                 const mIndex = date.getMonth();
                 const mName = months[mIndex];
-                
-                // Find if this month is in our last 6 months labels
-                // Note: simple label matching might overlap years (e.g. Jan 2024 vs Jan 2025). 
-                // For a simple demo this is fine, but in production we'd check year too.
                 const labelIndex = labels.indexOf(mName);
                 
                 if (labelIndex !== -1) {
-                    if (p.listingType === 'For Sale') salesData[labelIndex]++;
-                    if (p.listingType === 'For Rent') rentalsData[labelIndex]++;
+                    const cat = p.businessCategory || "Real Estate";
+                    if (cat === 'Creative Studio') studioData[labelIndex]++;
+                    else if (cat === 'Creative Stays+') staysData[labelIndex]++;
+                    else if (cat === 'Creative Events') eventsData[labelIndex]++;
                 }
             });
 
-            // Check if we have any data to show, else show nice sample data
-            const hasData = salesData.some(x => x > 0) || rentalsData.some(x => x > 0);
-            const finalSalesData = hasData ? salesData : [4, 6, 3, 7, 5, 8];
-            const finalRentalsData = hasData ? rentalsData : [2, 5, 4, 3, 6, 7];
-
-            // Chart Styles
             Chart.defaults.font.family = "'Inter', sans-serif";
             Chart.defaults.color = '#64748b';
 
@@ -609,67 +632,89 @@
                 data: {
                     labels: labels,
                     datasets: [
-                        {
-                            label: 'For Sale',
-                            data: finalSalesData,
-                            backgroundColor: '#1e3c72',
-                            borderRadius: 6,
-                            barPercentage: 0.6,
-                            categoryPercentage: 0.8
-                        },
-                        {
-                            label: 'For Rent',
-                            data: finalRentalsData,
-                            backgroundColor: '#d4af37', // Gold accent
-                            borderRadius: 6,
-                            barPercentage: 0.6,
-                            categoryPercentage: 0.8
-                        }
+                        { label: 'Creative Studio', data: studioData, backgroundColor: '#3b82f6', borderRadius: 4 },
+                        { label: 'Creative Stays+', data: staysData, backgroundColor: '#f97316', borderRadius: 4 },
+                        { label: 'Creative Events', data: eventsData, backgroundColor: '#a855f7', borderRadius: 4 }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 8 } },
-                        tooltip: { mode: 'index', intersect: false, backgroundColor: '#1e293b', titleColor: '#fff', bodyColor: '#cbd5e1', borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 }
+                        legend: { position: 'top' },
+                        tooltip: { mode: 'index', intersect: false }
                     },
                     scales: {
-                        y: { beginAtZero: true, grid: { borderDash: [5, 5], color: '#f1f5f9' }, ticks: { stepSize: 1 } },
-                        x: { grid: { display: false } }
+                        y: { beginAtZero: true, grid: { borderDash: [5, 5] }, ticks: { stepSize: 1 } },
+                        x: { grid: { display: false }, stacked: true },
+                        y: { stacked: true }
                     }
                 }
             });
         }
 
         // --- 6. PROPERTY LOGIC ---
+        
+        // NEW FUNCTION: Update Dropdown based on Business selection
+        function updateTypeOptions(selectedValue = null) {
+            const businessCat = document.getElementById('business-category').value;
+            const typeSelect = document.getElementById('property-type');
+            
+            // Clear existing options
+            typeSelect.innerHTML = "";
+
+            if (BUSINESS_DATA[businessCat]) {
+                BUSINESS_DATA[businessCat].forEach(type => {
+                    const option = document.createElement("option");
+                    option.value = type;
+                    option.text = type;
+                    if(selectedValue === type) option.selected = true;
+                    typeSelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement("option");
+                option.text = "Select Business First";
+                typeSelect.appendChild(option);
+            }
+        }
+
         function renderProperties() {
             const term = document.getElementById('search-properties').value.toLowerCase();
-            const typeFilter = document.getElementById('filter-listing-type').value;
+            const businessFilter = document.getElementById('filter-business').value;
             const statusFilter = document.getElementById('filter-status').value;
             
             const filtered = properties.filter(p => {
-                const matchName = (p.propertyName || "").toLowerCase().includes(term);
-                const matchType = typeFilter === "" || p.listingType === typeFilter;
+                const name = (p.propertyName || "").toLowerCase();
+                const cat = (p.businessCategory || "").toLowerCase();
+                const matchName = name.includes(term) || cat.includes(term);
+                
+                // Strict Filters
+                const matchBusiness = businessFilter === "" || p.businessCategory === businessFilter;
                 const matchStatus = statusFilter === "" || (p.status || "Available") === statusFilter;
-                return matchName && matchType && matchStatus;
+                
+                return matchName && matchBusiness && matchStatus;
             });
 
             const html = filtered.map(p => {
                 const status = p.status || "Available";
-                let badgeClass = "badge-sale"; // Green by default
-                if(status === "Sold") badgeClass = "badge-sold";
-                if(status === "Rented") badgeClass = "badge-rent";
-                if(status === "Available") badgeClass = "badge-sale"; // Reuse green
+                const category = p.businessCategory || "Real Estate";
+                
+                let badgeClass = "badge-sale"; 
+                if(status === "Booked/Sold") badgeClass = "badge-sold";
+                
+                // Color code the category
+                let catColor = "#64748b";
+                if(category === "Creative Studio") catColor = "#3b82f6";
+                if(category === "Creative Stays+") catColor = "#f97316";
+                if(category === "Creative Events") catColor = "#a855f7";
 
                 return `
                 <tr>
                     <td>${p.imageUrl ? `<img src="${p.imageUrl}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;">` : '🏠'}</td>
-                    <td><strong>${p.propertyName}</strong></td>
-                    <td>${p.ownerName}</td>
+                    <td><strong>${p.propertyName}</strong><br><small style="color:${catColor}">${category}</small></td>
+                    <td>${category}</td>
                     <td>${p.propertyType}</td>
                     <td>₹${(p.price||0).toLocaleString()}</td>
-                    <td>${p.listingType}</td>
                     <td><span class="badge ${badgeClass}">${status}</span></td>
                     <td>
                         <button class="btn btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="editProperty('${p.id}')">Edit</button>
@@ -683,44 +728,53 @@
         async function saveProperty(e) {
             e.preventDefault();
             const btn = document.getElementById('submit-property-btn');
+            const category = document.getElementById('business-category').value;
+            
+            if (!category) {
+                alert("Please select a Business Category (Website)!");
+                return;
+            }
+
             btn.innerText = "Saving...";
             
-            const radio = document.querySelector('input[name="listing-type"]:checked');
             const data = {
                 propertyName: document.getElementById('property-name').value,
                 ownerName: document.getElementById('owner-name').value,
                 imageUrl: document.getElementById('property-image').value,
                 assignedEmployee: document.getElementById('assigned-employee').value,
-                bhkType: document.getElementById('bhk-type').value,
-                price: Number(document.getElementById('price').value),
-                listingType: radio ? radio.value : "For Sale",
+                
+                // New Fields
+                businessCategory: category,
                 propertyType: document.getElementById('property-type').value,
-                areaSqft: Number(document.getElementById('area-sqft').value),
+                bhkType: document.getElementById('bhk-type').value, // Used as Specification
+                areaSqft: document.getElementById('area-sqft').value, // Used as Area/Dimensions
+                
+                price: Number(document.getElementById('price').value),
+                status: document.getElementById('property-status').value,
                 location: document.getElementById('location').value,
                 description: document.getElementById('description').value,
-                status: document.getElementById('property-status').value, // NEW Field
                 dateAdded: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             if(editingPropertyId) {
                 await db.collection("properties").doc(editingPropertyId).update(data);
-                showToast("Property Updated");
+                showToast("Record Updated");
             } else {
                 await db.collection("properties").add(data);
-                showToast("Property Listed");
+                showToast("Record Added to " + category);
             }
             
             resetPropertyForm();
             loadInitialData(); 
             navigateTo('properties');
-            btn.innerText = "Save Property";
+            btn.innerText = "Save Record";
         }
 
         async function deleteProperty(id) {
-            if(confirm("Are you sure you want to remove this listing?")) {
+            if(confirm("Are you sure you want to remove this record?")) {
                 await db.collection("properties").doc(id).delete();
                 loadInitialData();
-                showToast("Property Removed");
+                showToast("Record Removed");
             }
         }
 
@@ -739,15 +793,18 @@
             document.getElementById('description').value = p.description || "";
             document.getElementById('property-status').value = p.status || "Available";
             document.getElementById('assigned-employee').value = p.assignedEmployee || "";
-            document.getElementById('property-type').value = p.propertyType || "Villa";
-            document.getElementById('bhk-type').value = p.bhkType || "1 BHK";
+            document.getElementById('bhk-type').value = p.bhkType || "";
             
-            const radios = document.getElementsByName('listing-type');
-            for(let r of radios) { if(r.value === p.listingType) r.checked = true; }
+            // Handle Dropdowns Logic
+            const businessCat = p.businessCategory || "Real Estate";
+            document.getElementById('business-category').value = businessCat;
+            
+            // Trigger dynamic update of second dropdown
+            updateTypeOptions(p.propertyType);
 
             // Update UI for Edit Mode
-            document.getElementById('form-title').innerText = "Edit Property: " + p.propertyName;
-            document.getElementById('submit-property-btn').innerText = "Update Property";
+            document.getElementById('form-title').innerText = "Edit Record: " + p.propertyName;
+            document.getElementById('submit-property-btn').innerText = "Update Record";
             updatePreview();
             
             navigateTo('add-property');
@@ -798,14 +855,15 @@
             document.getElementById('assigned-employee').innerHTML = '<option value="">Select Agent</option>' + employees.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
         }
         function updateDashboard() {
-            // Count "Active" listings only
-            const activeSale = properties.filter(p => p.listingType === 'For Sale' && (!p.status || p.status === 'Available')).length;
-            const activeRent = properties.filter(p => p.listingType === 'For Rent' && (!p.status || p.status === 'Available')).length;
+            // Count Stats based on Category
+            const studio = properties.filter(p => p.businessCategory === 'Creative Studio').length;
+            const stays = properties.filter(p => p.businessCategory === 'Creative Stays+').length;
+            const events = properties.filter(p => p.businessCategory === 'Creative Events').length;
             
             document.getElementById('total-properties').innerText = properties.length;
-            document.getElementById('total-employees').innerText = employees.length;
-            document.getElementById('properties-for-sale').innerText = activeSale;
-            document.getElementById('properties-for-rent').innerText = activeRent;
+            document.getElementById('stats-studio').innerText = studio;
+            document.getElementById('stats-stays').innerText = stays;
+            document.getElementById('stats-events').innerText = events;
         }
         function navigateTo(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
@@ -813,17 +871,21 @@
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
             
-            // Reset form if navigating away from add property without saving
             if (page !== 'add-property' && editingPropertyId) {
-                // optional: warn user? for now just reset if they click 'All Properties'
+                // optional reset logic
             }
         }
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
         function resetPropertyForm() { 
             document.getElementById('property-form').reset(); 
             editingPropertyId = null;
-            document.getElementById('form-title').innerText = "New Property";
-            document.getElementById('submit-property-btn').innerText = "Save Property";
+            document.getElementById('form-title').innerText = "New Record";
+            document.getElementById('submit-property-btn').innerText = "Save Record";
+            
+            // Reset Dropdowns
+            document.getElementById('business-category').value = "";
+            updateTypeOptions();
+            
             updatePreview();
         }
         function showToast(msg) {
@@ -835,10 +897,10 @@
 
         // --- 8. EXCEL ---
         function downloadTemplate() {
-            const data = [{ "Property Name": "Sample", "Owner Name": "John", "Price": 5000000, "Location": "City", "Property Type": "Villa", "BHK": "3BHK", "Listing Type": "For Sale", "Area": 2500, "Status": "Available" }];
+            const data = [{ "Name": "Sample Item", "Owner": "John", "Price": 5000, "Location": "Jaipur", "Category": "Creative Studio", "Type": "Interiors", "Status": "Available" }];
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Template");
-            XLSX.writeFile(wb, "RealEstate_Template.xlsx");
+            XLSX.writeFile(wb, "MultiSite_Template.xlsx");
         }
         function handleFileSelect(event) {
             const file = event.target.files[0];
@@ -849,10 +911,10 @@
                 showToast(`Importing ${data.length} records...`);
                 data.forEach(async row => {
                     await db.collection("properties").add({
-                        propertyName: row["Property Name"], ownerName: row["Owner Name"],
+                        propertyName: row["Name"], ownerName: row["Owner"],
                         price: row["Price"], location: row["Location"],
-                        propertyType: row["Property Type"], bhkType: row["BHK"],
-                        listingType: row["Listing Type"], areaSqft: row["Area"],
+                        businessCategory: row["Category"] || "Real Estate",
+                        propertyType: row["Type"], 
                         status: row["Status"] || "Available",
                         imageUrl: "", dateAdded: firebase.firestore.FieldValue.serverTimestamp()
                     });
