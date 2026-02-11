@@ -4,11 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creative Crew - Elite Property Management</title>
+    <title>Creative Crew - Luxury Estate Management</title>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
+    <!-- Libraries -->
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -17,384 +20,366 @@
     
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --bg: #f8f9fa;
-            --text: #2b2d42;
-            --glass: rgba(255, 255, 255, 0.1);
-            --glass-border: rgba(255, 255, 255, 0.2);
+            /* Luxury Real Estate Palette */
+            --primary: #1e293b;     /* Deep Slate/Navy */
+            --accent: #d4af37;      /* Metallic Gold */
+            --accent-hover: #b4941f;
+            --text-light: #f8fafc;
+            --text-dark: #334155;
+            --glass-bg: rgba(15, 23, 42, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg); color: var(--text); overflow-x: hidden; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; background: #f1f5f9; }
 
-        /* --- SUPER DUPER LOGIN STYLES --- */
+        /* --- 1. LUXURY LOGIN PAGE --- */
         .login-wrapper {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #0f172a;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
             display: flex; align-items: center; justify-content: center;
             z-index: 9999;
             overflow: hidden;
-            transition: opacity 0.8s ease-in-out;
+            background: #000;
         }
 
-        /* Animated Background Blobs */
-        .blob {
-            position: absolute;
-            filter: blur(80px);
-            z-index: 0;
+        /* Cinematic Background with Zoom Effect */
+        .cinematic-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1600596542815-2495db9dc2c3?auto=format&fit=crop&q=80') no-repeat center center/cover;
             opacity: 0.6;
-            animation: float 10s infinite ease-in-out alternate;
+            animation: kenBurns 20s infinite alternate ease-in-out;
+            z-index: 1;
         }
-        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #4361ee; animation-delay: 0s; }
-        .blob-2 { bottom: -10%; right: -10%; width: 400px; height: 400px; background: #f72585; animation-delay: -5s; }
-        .blob-3 { bottom: 20%; left: 20%; width: 300px; height: 300px; background: #7209b7; animation-delay: -2s; }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 50px) scale(1.1); }
+        
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(0,0,0,0.8) 0%, rgba(15,23,42,0.4) 100%);
+            z-index: 2;
         }
 
-        /* Glassmorphism Card */
+        @keyframes kenBurns {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.15); }
+        }
+
+        /* Glass Login Card */
         .login-card {
-            position: relative;
-            z-index: 10;
-            background: rgba(255, 255, 255, 0.05);
+            position: relative; z-index: 10;
+            width: 100%; max-width: 450px;
+            background: var(--glass-bg);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            padding: 50px 40px;
-            border-radius: 24px;
             border: 1px solid var(--glass-border);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 420px;
-            text-align: center;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 48px 40px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
             transform: translateY(30px);
             opacity: 0;
-            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeSlideUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
         }
 
-        @keyframes slideUp { to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeSlideUp { to { transform: translateY(0); opacity: 1; } }
 
-        .brand-icon {
-            font-size: 40px; margin-bottom: 10px; display: inline-block;
-            background: linear-gradient(135deg, #4361ee, #f72585);
+        /* Typography */
+        .brand-header { text-align: center; margin-bottom: 40px; }
+        .brand-logo { 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 38px; color: #fff; font-weight: 600; 
+            letter-spacing: 1px; margin-bottom: 8px;
+            background: linear-gradient(to right, #fff, #d4af37, #fff);
             -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 5s linear infinite;
         }
-        
-        .login-title { font-size: 28px; font-weight: 700; color: white; margin-bottom: 8px; letter-spacing: -0.5px; }
-        .login-subtitle { color: #94a3b8; font-size: 14px; margin-bottom: 35px; }
+        .brand-tagline { color: #94a3b8; font-size: 13px; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* Input Groups */
-        .input-group { position: relative; margin-bottom: 25px; text-align: left; }
+        @keyframes shine { to { background-position: 200% center; } }
+
+        /* Floating Label Inputs */
+        .input-group { position: relative; margin-bottom: 24px; }
         
-        .input-field {
-            width: 100%;
-            padding: 16px 20px 16px 50px;
-            background: rgba(255, 255, 255, 0.03);
+        .form-input {
+            width: 100%; padding: 16px 12px;
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            color: white;
-            font-size: 15px;
-            outline: none;
+            border-radius: 8px;
+            color: #fff; font-size: 16px; outline: none;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        }
+
+        .input-label {
+            position: absolute; left: 12px; top: 16px;
+            color: #94a3b8; font-size: 16px; pointer-events: none;
             transition: all 0.3s ease;
         }
 
-        .input-field:focus {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: #4361ee;
-            box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.15);
+        /* Label moves up when input has focus or value */
+        .form-input:focus ~ .input-label,
+        .form-input:not(:placeholder-shown) ~ .input-label {
+            top: -10px; left: 10px; font-size: 12px;
+            color: var(--accent); background: #0f172a; padding: 0 4px; border-radius: 4px;
         }
 
-        .input-icon {
-            position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
-            color: #64748b; font-size: 18px; transition: color 0.3s;
-        }
-        
-        .input-field:focus + .input-icon { color: #4361ee; }
-        
-        .toggle-password {
-            position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
-            color: #64748b; cursor: pointer; font-size: 18px;
-        }
-        .toggle-password:hover { color: white; }
-
-        /* Animated Button */
-        .login-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #4361ee 0%, #3a0ca3 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+        /* Gold Button */
+        .btn-gold {
+            width: 100%; padding: 16px;
+            background: linear-gradient(135deg, #d4af37 0%, #b4941f 100%);
+            color: #0f172a; border: none; border-radius: 8px;
+            font-size: 16px; font-weight: 600; letter-spacing: 0.5px;
+            cursor: pointer; position: relative; overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
         }
 
-        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(67, 97, 238, 0.4); }
-        .login-btn:active { transform: translateY(0); }
-        
-        /* Button Loading/Success States */
-        .login-btn.loading { color: transparent; pointer-events: none; }
-        .login-btn.loading::after {
-            content: ""; position: absolute; top: 50%; left: 50%; width: 20px; height: 20px;
-            border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin-top: -10px; margin-left: -10px;
+        .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(212, 175, 55, 0.2); }
+        .btn-gold::after {
+            content: ''; position: absolute; top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
         }
-        .login-btn.success { background: #10b981; color: white; pointer-events: none; }
+        .btn-gold:hover::after { left: 100%; }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
-        
-        /* Error Message */
-        .error-msg {
-            background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2);
-            color: #fca5a5; padding: 12px; border-radius: 8px; font-size: 13px;
-            margin-top: 15px; display: none; align-items: center; gap: 8px;
-            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        /* Status & Utilities */
+        .form-footer { margin-top: 24px; display: flex; justify-content: space-between; color: #64748b; font-size: 13px; }
+        .form-footer a { color: #94a3b8; text-decoration: none; transition: 0.3s; }
+        .form-footer a:hover { color: var(--accent); }
+
+        .error-message {
+            color: #ff8a80; font-size: 13px; text-align: center; margin-top: 16px;
+            min-height: 20px; opacity: 0; transition: opacity 0.3s;
         }
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shake { 10%, 90% { transform: translate3d(-1px, 0, 0); } 20%, 80% { transform: translate3d(2px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-4px, 0, 0); } 40%, 60% { transform: translate3d(4px, 0, 0); } }
 
-
-        /* --- MAIN APP LAYOUT (DASHBOARD) --- */
-        .app-container { display: flex; height: 100vh; background: #f3f4f6; }
-        .sidebar { width: 260px; background: white; border-right: 1px solid #e5e7eb; display: flex; flex-direction: column; transition: transform 0.3s ease; z-index: 100; }
-        .sidebar-header { padding: 24px; border-bottom: 1px solid #f3f4f6; }
-        .logo { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 20px; color: #1e293b; }
-        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #4361ee, #3f37c9); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
         
-        .nav-menu { list-style: none; padding: 20px 12px; }
-        .nav-item { margin-bottom: 4px; }
-        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #64748b; text-decoration: none; border-radius: 8px; transition: all 0.2s; cursor: pointer; font-weight: 500; font-size: 14px; }
-        .nav-link:hover { background: #f8fafc; color: #4361ee; }
-        .nav-link.active { background: #eff6ff; color: #4361ee; }
+        /* --- 2. MAIN APP DASHBOARD STYLES (Retained) --- */
+        .app-container { display: flex; height: 100vh; background: #f8fafc; color: #1e293b; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: #ffffff; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; z-index: 100; transition: 0.3s; }
+        .sidebar-header { padding: 24px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 40px; height: 40px; background: #1e293b; color: #d4af37; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: 700; font-family: 'Cormorant Garamond'; font-size: 20px; }
+        .logo-text { font-family: 'Cormorant Garamond'; font-weight: 700; font-size: 20px; color: #1e293b; }
+        
+        .nav-menu { padding: 20px 12px; list-style: none; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; color: #64748b; text-decoration: none; border-radius: 8px; font-size: 14px; font-weight: 500; transition: 0.2s; cursor: pointer; margin-bottom: 4px; }
+        .nav-link:hover, .nav-link.active { background: #f1f5f9; color: #1e293b; }
+        .nav-icon { width: 20px; text-align: center; }
 
-        .main-content { flex: 1; overflow-y: auto; padding: 32px; transition: all 0.3s; }
+        /* Main Content */
+        .main-content { flex: 1; padding: 32px; overflow-y: auto; }
         .page-header { margin-bottom: 32px; }
-        .page-title { font-size: 24px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-        .page-subtitle { color: #64748b; font-size: 14px; }
+        .page-title { font-family: 'Cormorant Garamond'; font-size: 32px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+        .page-subtitle { color: #64748b; font-size: 15px; }
 
-        /* Stats Grid */
+        /* Stats */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .stat-card { background: white; padding: 24px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); transition: transform 0.2s; }
-        .stat-card:hover { transform: translateY(-4px); }
-        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .stat-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .stat-value { font-size: 32px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
-        .stat-label { font-size: 13px; color: #94a3b8; font-weight: 500; }
+        .stat-card { background: white; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); }
+        .stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .stat-title { color: #64748b; font-size: 14px; font-weight: 500; }
+        .stat-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+        .stat-value { font-size: 28px; font-weight: 700; color: #0f172a; }
         
-        /* Colors */
-        .blue .stat-icon { background: #eff6ff; color: #3b82f6; } .blue .stat-title { color: #64748b; }
-        .green .stat-icon { background: #f0fdf4; color: #22c55e; }
-        .orange .stat-icon { background: #fff7ed; color: #f97316; }
-        .purple .stat-icon { background: #faf5ff; color: #a855f7; }
+        .bg-blue { background: #eff6ff; color: #3b82f6; }
+        .bg-gold { background: #fffbeb; color: #d97706; }
+        .bg-green { background: #f0fdf4; color: #22c55e; }
+        .bg-purple { background: #faf5ff; color: #a855f7; }
 
-        /* Generic Card & Table */
-        .card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); padding: 24px; overflow: hidden; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-        .card-title { font-size: 18px; font-weight: 600; color: #0f172a; }
-        
+        /* Tables & Cards */
+        .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 24px; margin-bottom: 24px; }
         .table-container { overflow-x: auto; }
         .table { width: 100%; border-collapse: collapse; }
-        .table th { text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; color: #64748b; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
-        .table td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; vertical-align: middle; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .table th { text-align: left; padding: 16px; font-size: 12px; font-weight: 600; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+        .table td { padding: 16px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; }
         .badge-sale { background: #ecfdf5; color: #059669; }
         .badge-rent { background: #fff7ed; color: #ea580c; }
-        
-        /* Buttons */
-        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 500; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
-        .btn-primary { background: #4361ee; color: white; }
-        .btn-primary:hover { background: #3f37c9; }
-        .btn-secondary { background: white; border: 1px solid #e2e8f0; color: #475569; }
-        .btn-secondary:hover { background: #f8fafc; border-color: #cbd5e1; }
-        .btn-danger { background: #fee2e2; color: #ef4444; }
-        .btn-danger:hover { background: #fecaca; }
-        .btn-sm { padding: 6px 12px; font-size: 12px; }
 
-        /* Forms */
+        /* Forms & Buttons */
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .form-group { margin-bottom: 8px; }
+        .form-group { margin-bottom: 16px; }
         .full-width { grid-column: span 2; }
         .form-label { display: block; margin-bottom: 8px; font-size: 13px; font-weight: 500; color: #475569; }
-        .form-label.required::after { content: "*"; color: #ef4444; margin-left: 4px; }
-        .form-control { width: 100%; padding: 10px 14px; border: 1px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: border 0.2s; outline: none; }
-        .form-control:focus { border-color: #4361ee; ring: 2px solid #e0e7ff; }
+        .form-control { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 14px; outline: none; transition: 0.2s; }
+        .form-control:focus { border-color: #1e293b; ring: 1px solid #1e293b; }
         
-        .radio-group { display: flex; gap: 20px; padding: 8px 0; }
-        .radio-option { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
-
-        /* Utils */
-        .hidden { display: none !important; }
-        .toolbar { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
-        .search-box { position: relative; flex: 1; min-width: 200px; }
-        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-        .search-box input { padding-left: 36px; }
+        .btn { padding: 10px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: #1e293b; color: #d4af37; }
+        .btn-primary:hover { background: #0f172a; }
+        .btn-secondary { background: white; border: 1px solid #e2e8f0; color: #475569; }
+        .btn-danger { background: #fee2e2; color: #ef4444; }
+        
+        .toolbar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+        .search-box { flex: 1; min-width: 200px; }
         #excel-upload { display: none; }
         
-        .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 24px; border-radius: 8px; color: white; font-size: 14px; font-weight: 500; animation: slideIn 0.3s ease; z-index: 1000; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .toast.success { background: #10b981; }
-        .toast.error { background: #ef4444; }
-        .toast.info { background: #3b82f6; }
-        @keyframes slideIn { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        /* Utils */
+        .hidden { display: none !important; }
+        .mobile-toggle { display: none; position: fixed; top: 16px; left: 16px; z-index: 200; background: white; border: 1px solid #e2e8f0; padding: 8px; border-radius: 4px; }
+        .toast { position: fixed; bottom: 24px; right: 24px; padding: 12px 24px; border-radius: 8px; color: white; background: #1e293b; z-index: 2000; animation: slideIn 0.3s; }
+        @keyframes slideIn { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        /* Mobile */
-        .mobile-menu-toggle { display: none; position: fixed; top: 16px; left: 16px; z-index: 200; background: white; border: none; padding: 8px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); font-size: 20px; }
-        
         @media (max-width: 768px) {
-            .login-card { margin: 20px; }
-            .sidebar { position: fixed; height: 100%; transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { padding: 20px; margin-left: 0; }
-            .mobile-menu-toggle { display: block; }
             .form-grid { grid-template-columns: 1fr; }
             .full-width { grid-column: span 1; }
+            .sidebar { transform: translateX(-100%); position: fixed; height: 100%; }
+            .sidebar.open { transform: translateX(0); }
+            .mobile-toggle { display: block; }
+            .main-content { padding: 20px; margin-top: 40px; }
         }
     </style>
 </head>
 
 <body>
 
+    <!-- === NEW LUXURY LOGIN VIEW === -->
     <div id="login-view" class="login-wrapper">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
-        <div class="blob blob-3"></div>
-
+        <div class="cinematic-bg"></div>
+        <div class="overlay"></div>
+        
         <div class="login-card">
-            <div class="brand-icon">✨</div>
-            <h1 class="login-title">Welcome Back</h1>
-            <p class="login-subtitle">Enter your credentials to access the dashboard</p>
+            <div class="brand-header">
+                <div class="brand-logo">CREATIVE CREW</div>
+                <div class="brand-tagline">Elite Property Management</div>
+            </div>
             
             <form onsubmit="handleLogin(event)">
                 <div class="input-group">
-                    <input type="text" id="username" class="input-field" placeholder="Username" required autocomplete="off">
-                    <i class="input-icon">👤</i> </div>
+                    <input type="text" id="username" class="form-input" placeholder=" " required autocomplete="off">
+                    <label class="input-label">Username</label>
+                </div>
                 
                 <div class="input-group">
-                    <input type="password" id="password" class="input-field" placeholder="Password" required>
-                    <i class="input-icon">🔒</i> <span class="toggle-password" onclick="togglePassword()">👁️</span>
+                    <input type="password" id="password" class="form-input" placeholder=" " required>
+                    <label class="input-label">Password</label>
+                </div>
+                
+                <div style="display: flex; align-items: center; margin-bottom: 24px;">
+                    <input type="checkbox" id="remember" style="accent-color: var(--accent);">
+                    <label for="remember" style="color: #94a3b8; font-size: 13px; margin-left: 8px;">Remember device</label>
                 </div>
 
-                <button type="submit" id="login-btn-el" class="login-btn">
-                    <span>Sign In</span>
+                <button type="submit" id="login-btn-el" class="btn-gold">
+                    Sign In
                 </button>
                 
-                <div id="login-error" class="error-msg">
-                    <span>⚠️</span> Invalid Username or Password
+                <div class="form-footer">
+                    <span>Protected Area</span>
+                    <a href="#">Forgot Password?</a>
                 </div>
+                
+                <div id="login-error" class="error-message">Invalid credentials provided.</div>
             </form>
         </div>
     </div>
 
+    <!-- === MAIN APPLICATION DASHBOARD === -->
     <div id="main-app" class="app-container" style="display: none;">
-        <button class="mobile-menu-toggle" onclick="toggleSidebar()">☰</button>
+        <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
 
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <div class="logo">
-                    <div class="logo-icon">CC</div>
-                    <span>Creative Crew</span>
-                </div>
+                <div class="logo-icon">CC</div>
+                <div class="logo-text">Creative Crew</div>
             </div>
             <nav>
                 <ul class="nav-menu">
-                    <li class="nav-item"><a class="nav-link active" onclick="navigateTo('dashboard')"><span class="nav-icon">🏠</span><span>Dashboard</span></a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('properties')"><span class="nav-icon">🏢</span><span>All Properties</span></a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('add-property')"><span class="nav-icon">➕</span><span>Add Property</span></a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('employees')"><span class="nav-icon">👥</span><span>Employees</span></a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('add-employee')"><span class="nav-icon">👤</span><span>Add Employee</span></a></li>
-                    <li class="nav-item"><a class="nav-link" onclick="exportToExcel()"><span class="nav-icon">📥</span><span>Export to Excel</span></a></li>
+                    <li class="nav-item"><a class="nav-link active" onclick="navigateTo('dashboard')"><span class="nav-icon">🏠</span> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('properties')"><span class="nav-icon">🏢</span> Properties</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('add-property')"><span class="nav-icon">➕</span> Add Listing</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('employees')"><span class="nav-icon">👥</span> Team</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="navigateTo('add-employee')"><span class="nav-icon">👤</span> Add Agent</a></li>
+                    <li class="nav-item"><a class="nav-link" onclick="exportToExcel()"><span class="nav-icon">📊</span> Export Data</a></li>
                 </ul>
             </nav>
-            <div style="padding: 20px; border-top: 1px solid #f1f5f9; margin-top: auto;">
-                <a onclick="handleLogout()" style="color: #ef4444; cursor: pointer; display: flex; align-items: center; gap: 10px; text-decoration: none; font-weight: 500; font-size: 14px;">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-                    <span>Logout</span>
+            <div style="padding: 24px; border-top: 1px solid #f1f5f9; margin-top: auto;">
+                <a onclick="handleLogout()" style="color: #64748b; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; text-decoration: none;">
+                    <span>🚪</span> Logout
                 </a>
             </div>
         </aside>
 
         <main class="main-content">
+            <!-- Dashboard View -->
             <div id="dashboard-page" class="page">
                 <div class="page-header">
-                    <h1 class="page-title">Dashboard</h1>
-                    <p class="page-subtitle">Overview of your property business</p>
+                    <h1 class="page-title">Dashboard Overview</h1>
+                    <p class="page-subtitle">Welcome back, Admin. Here is your portfolio status.</p>
                 </div>
                 <div class="stats-grid">
-                    <div class="stat-card blue">
-                        <div class="stat-header"><span class="stat-title">Total Properties</span><div class="stat-icon">🏢</div></div>
+                    <div class="stat-card">
+                        <div class="stat-header"><span class="stat-title">TOTAL PROPERTIES</span><div class="stat-icon bg-blue">🏢</div></div>
                         <div class="stat-value" id="total-properties">0</div>
-                        <div class="stat-label">Active listings</div>
                     </div>
-                    <div class="stat-card green">
-                        <div class="stat-header"><span class="stat-title">For Sale</span><div class="stat-icon">💰</div></div>
+                    <div class="stat-card">
+                        <div class="stat-header"><span class="stat-title">FOR SALE</span><div class="stat-icon bg-green">💰</div></div>
                         <div class="stat-value" id="properties-for-sale">0</div>
-                        <div class="stat-label">Available to purchase</div>
                     </div>
-                    <div class="stat-card orange">
-                        <div class="stat-header"><span class="stat-title">For Rent</span><div class="stat-icon">🔑</div></div>
+                    <div class="stat-card">
+                        <div class="stat-header"><span class="stat-title">FOR RENT</span><div class="stat-icon bg-gold">🔑</div></div>
                         <div class="stat-value" id="properties-for-rent">0</div>
-                        <div class="stat-label">Available to rent</div>
                     </div>
-                    <div class="stat-card purple">
-                        <div class="stat-header"><span class="stat-title">Total Employees</span><div class="stat-icon">👥</div></div>
+                    <div class="stat-card">
+                        <div class="stat-header"><span class="stat-title">AGENTS</span><div class="stat-icon bg-purple">👥</div></div>
                         <div class="stat-value" id="total-employees">0</div>
-                        <div class="stat-label">Team members</div>
                     </div>
                 </div>
             </div>
 
+            <!-- Properties List View -->
             <div id="properties-page" class="page hidden">
-                <div class="page-header"><h1 class="page-title">All Properties</h1><p class="page-subtitle">Manage your listings</p></div>
+                <div class="page-header"><h1 class="page-title">Property Portfolio</h1></div>
                 <div class="card">
                     <div class="toolbar">
-                        <div class="search-box">
-                            <span class="search-icon">🔍</span>
-                            <input type="text" class="form-control" placeholder="Search..." id="search-properties" oninput="filterProperties()">
-                        </div>
-                        <select class="form-control" id="filter-listing-type" onchange="filterProperties()" style="max-width: 150px;">
-                            <option value="">All Listings</option><option value="For Sale">For Sale</option><option value="For Rent">For Rent</option>
+                        <input type="text" class="form-control search-box" placeholder="Search portfolio..." id="search-properties" oninput="filterProperties()">
+                        <select class="form-control" style="width: 150px;" id="filter-listing-type" onchange="filterProperties()">
+                            <option value="">All Status</option><option value="For Sale">For Sale</option><option value="For Rent">For Rent</option>
                         </select>
-                        <input type="file" id="excel-upload" accept=".xlsx, .xls" onchange="handleFileSelect(event)">
-                        <button class="btn btn-secondary" onclick="downloadTemplate()">📥 Template</button>
-                        <button class="btn btn-primary" onclick="document.getElementById('excel-upload').click()">📤 Import Excel</button>
+                        <input type="file" id="excel-upload" accept=".xlsx" onchange="handleFileSelect(event)">
+                        <button class="btn btn-secondary" onclick="downloadTemplate()">Template</button>
+                        <button class="btn btn-primary" onclick="document.getElementById('excel-upload').click()">Import Excel</button>
                     </div>
                     <div class="table-container">
                         <table class="table">
-                            <thead><tr><th>Image</th><th>Name</th><th>Owner</th><th>Type</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
+                            <thead><tr><th>Photo</th><th>Property</th><th>Owner</th><th>Type</th><th>Price</th><th>Status</th><th>Actions</th></tr></thead>
                             <tbody id="properties-table-body"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
+            <!-- Add Property View -->
             <div id="add-property-page" class="page hidden">
-                <div class="page-header"><h1 class="page-title">Add Property</h1><p class="page-subtitle">Enter property details</p></div>
+                <div class="page-header"><h1 class="page-title">New Listing</h1><p class="page-subtitle">Create a new property record.</p></div>
                 <div class="card">
                     <form id="property-form">
                         <div class="form-grid">
-                            <div class="form-group"><label class="form-label required">Property Name</label><input type="text" class="form-control" id="property-name" required></div>
-                            <div class="form-group"><label class="form-label required">Owner Name</label><input type="text" class="form-control" id="owner-name" required></div>
-                            <div class="form-group"><label class="form-label required">Image Link</label><input type="text" class="form-control" id="property-image" placeholder="https://..." required></div>
-                            <div class="form-group"><label class="form-label required">Assigned Employee</label><select class="form-control" id="assigned-employee" required><option value="">Select</option></select></div>
-                            <div class="form-group"><label class="form-label required">Type</label><select class="form-control" id="property-type" required><option value="Villa">Villa</option><option value="Plot">Plot</option><option value="Flat">Flat</option><option value="Commercial">Commercial</option></select></div>
-                            <div class="form-group"><label class="form-label required">BHK</label><select class="form-control" id="bhk-type" required><option value="1BHK">1 BHK</option><option value="2BHK">2 BHK</option><option value="3BHK">3 BHK</option></select></div>
-                            <div class="form-group"><label class="form-label required">Area (sq ft)</label><input type="number" class="form-control" id="area-sqft" required></div>
-                            <div class="form-group"><label class="form-label required">Price (₹)</label><input type="number" class="form-control" id="price" required></div>
-                            <div class="form-group"><label class="form-label">Listing</label>
-                                <div class="radio-group">
-                                    <label class="radio-option"><input type="radio" name="listing-type" value="For Sale" checked> For Sale</label>
-                                    <label class="radio-option"><input type="radio" name="listing-type" value="For Rent"> For Rent</label>
+                            <div class="form-group"><label class="form-label">Property Name</label><input type="text" class="form-control" id="property-name" required></div>
+                            <div class="form-group"><label class="form-label">Owner Name</label><input type="text" class="form-control" id="owner-name" required></div>
+                            <div class="form-group"><label class="form-label">Image URL</label><input type="text" class="form-control" id="property-image" placeholder="https://" required></div>
+                            <div class="form-group"><label class="form-label">Assigned Agent</label><select class="form-control" id="assigned-employee" required><option value="">Select Agent</option></select></div>
+                            <div class="form-group"><label class="form-label">Type</label><select class="form-control" id="property-type"><option>Villa</option><option>Apartment</option><option>Plot</option><option>Commercial</option></select></div>
+                            <div class="form-group"><label class="form-label">Configuration</label><select class="form-control" id="bhk-type"><option>1 BHK</option><option>2 BHK</option><option>3 BHK</option><option>4+ BHK</option></select></div>
+                            <div class="form-group"><label class="form-label">Area (sq ft)</label><input type="number" class="form-control" id="area-sqft" required></div>
+                            <div class="form-group"><label class="form-label">Price (₹)</label><input type="number" class="form-control" id="price" required></div>
+                            <div class="form-group"><label class="form-label">Listing Type</label>
+                                <div style="display:flex; gap:15px; margin-top:5px;">
+                                    <label><input type="radio" name="listing-type" value="For Sale" checked> For Sale</label>
+                                    <label><input type="radio" name="listing-type" value="For Rent"> For Rent</label>
                                 </div>
                             </div>
-                            <div class="form-group full-width"><label class="form-label required">Location</label><input type="text" class="form-control" id="location" required></div>
-                            <div class="form-group full-width"><label class="form-label">Description</label><textarea class="form-control" id="description" rows="3"></textarea></div>
+                            <div class="full-width form-group"><label class="form-label">Location</label><input type="text" class="form-control" id="location" required></div>
+                            <div class="full-width form-group"><label class="form-label">Description</label><textarea class="form-control" id="description" rows="3"></textarea></div>
                         </div>
-                        <div style="margin-top: 24px; display: flex; gap: 10px;">
+                        <div style="margin-top:20px; display:flex; gap:10px;">
                             <button type="button" class="btn btn-primary" id="submit-property-btn" onclick="saveProperty(event)">Save Property</button>
                             <button type="button" class="btn btn-secondary" onclick="resetPropertyForm()">Reset</button>
                         </div>
@@ -402,28 +387,30 @@
                 </div>
             </div>
 
+            <!-- Employees View -->
             <div id="employees-page" class="page hidden">
-                <div class="page-header"><h1 class="page-title">Employees</h1></div>
+                <div class="page-header"><h1 class="page-title">Team Management</h1></div>
                 <div class="card">
-                    <div class="toolbar"><button class="btn btn-primary" onclick="navigateTo('add-employee')">➕ New Employee</button></div>
+                    <div class="toolbar"><button class="btn btn-primary" onclick="navigateTo('add-employee')">Add New Agent</button></div>
                     <div class="table-container">
                         <table class="table"><thead><tr><th>ID</th><th>Name</th><th>Contact</th><th>Role</th></tr></thead><tbody id="employees-table-body"></tbody></table>
                     </div>
                 </div>
             </div>
 
+            <!-- Add Employee View -->
             <div id="add-employee-page" class="page hidden">
-                <div class="page-header"><h1 class="page-title">Add Employee</h1></div>
+                <div class="page-header"><h1 class="page-title">Register Agent</h1></div>
                 <div class="card">
                     <form id="employee-form">
                         <div class="form-grid">
-                            <div class="form-group"><label class="form-label">ID</label><input type="text" class="form-control" id="employee-id" required></div>
-                            <div class="form-group"><label class="form-label">Name</label><input type="text" class="form-control" id="employee-name" required></div>
+                            <div class="form-group"><label class="form-label">Employee ID</label><input type="text" class="form-control" id="employee-id" required></div>
+                            <div class="form-group"><label class="form-label">Full Name</label><input type="text" class="form-control" id="employee-name" required></div>
                             <div class="form-group"><label class="form-label">Contact</label><input type="tel" class="form-control" id="employee-contact" required></div>
                             <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-control" id="employee-email" required></div>
-                            <div class="form-group full-width"><label class="form-label">Role</label><select class="form-control" id="employee-role"><option>Agent</option><option>Manager</option></select></div>
+                            <div class="full-width form-group"><label class="form-label">Role</label><select class="form-control" id="employee-role"><option>Real Estate Agent</option><option>Property Manager</option></select></div>
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="saveEmployee(event)" style="margin-top: 20px;">Save Employee</button>
+                        <button type="button" class="btn btn-primary" onclick="saveEmployee(event)" style="margin-top:20px;">Save Record</button>
                     </form>
                 </div>
             </div>
@@ -433,7 +420,7 @@
     <div id="toast-container"></div>
 
     <script>
-        // --- FIREBASE CONFIGURATION ---
+        // --- 1. FIREBASE CONFIG ---
         const firebaseConfig = {
             apiKey: "AIzaSyC-8DGxz2aABfonDbHvlIwQuicSqckjufc",
             authDomain: "property-manager-326bf.firebaseapp.com",
@@ -445,66 +432,51 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
 
-        // --- GLOBAL STATE ---
+        // --- 2. GLOBAL VARIABLES ---
         let properties = [];
         let employees = [];
         let editingPropertyId = null;
 
-        // --- NEW LOGIN LOGIC ---
-        function togglePassword() {
-            const input = document.getElementById('password');
-            const icon = document.querySelector('.toggle-password');
-            if (input.type === "password") {
-                input.type = "text";
-                icon.innerText = "🔒"; // Change icon to closed lock visually if desired, or keep eye
-            } else {
-                input.type = "password";
-                icon.innerText = "👁️";
-            }
-        }
-
-        function handleLogin(event) {
-            event.preventDefault();
+        // --- 3. LOGIN LOGIC ---
+        function handleLogin(e) {
+            e.preventDefault();
             const user = document.getElementById('username').value;
             const pass = document.getElementById('password').value;
             const btn = document.getElementById('login-btn-el');
             const errorMsg = document.getElementById('login-error');
+            const card = document.querySelector('.login-card');
 
-            errorMsg.style.display = 'none';
+            btn.innerText = "Authenticating...";
+            btn.style.opacity = "0.8";
 
-            // 1. Loading State
-            btn.classList.add('loading');
-            
-            // Simulate network delay for effect (1.5 seconds)
             setTimeout(() => {
                 if (user === 'admin' && pass === '1234') {
-                    // 2. Success State
-                    btn.classList.remove('loading');
-                    btn.classList.add('success');
-                    btn.innerHTML = "<span>✓ Success</span>";
-
-                    // 3. Transition
+                    btn.innerText = "Access Granted";
+                    btn.style.background = "#22c55e"; // Success green
+                    
+                    // Transition
+                    document.getElementById('login-view').style.transition = "opacity 0.8s";
+                    document.getElementById('login-view').style.opacity = "0";
+                    
+                    sessionStorage.setItem('isLoggedIn', 'true');
                     setTimeout(() => {
-                        sessionStorage.setItem('isLoggedIn', 'true');
-                        // Fade out login view
-                        document.getElementById('login-view').style.opacity = '0';
-                        setTimeout(() => {
-                            document.getElementById('login-view').style.display = 'none';
-                            document.getElementById('main-app').style.display = 'flex';
-                            loadInitialData();
-                        }, 800);
+                        document.getElementById('login-view').style.display = 'none';
+                        document.getElementById('main-app').style.display = 'flex';
+                        loadInitialData();
                     }, 800);
-
                 } else {
-                    // 4. Error State
-                    btn.classList.remove('loading');
-                    errorMsg.style.display = 'flex'; // Triggers shake animation via CSS
-                    // Reset animation hack
-                    errorMsg.style.animation = 'none';
-                    errorMsg.offsetHeight; /* trigger reflow */
-                    errorMsg.style.animation = 'shake 0.4s cubic-bezier(.36,.07,.19,.97) both';
+                    btn.innerText = "Sign In";
+                    btn.style.opacity = "1";
+                    btn.style.background = ""; // Reset gradient
+                    
+                    errorMsg.style.opacity = "1";
+                    
+                    // Shake animation
+                    card.classList.remove('shake');
+                    void card.offsetWidth; // Trigger reflow
+                    card.classList.add('shake');
                 }
-            }, 1200);
+            }, 1000);
         }
 
         function handleLogout() {
@@ -513,16 +485,14 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
-            if (isLoggedIn) {
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
                 document.getElementById('login-view').style.display = 'none';
                 document.getElementById('main-app').style.display = 'flex';
                 loadInitialData();
             }
         });
 
-        // --- APP LOGIC (Minified for Single File Efficiency) ---
-        
+        // --- 4. DATA LOGIC ---
         async function loadInitialData() {
             try {
                 const pSnap = await db.collection("properties").orderBy("dateAdded", "desc").get();
@@ -534,7 +504,7 @@
                 renderProperties();
                 renderEmployees();
                 updateEmployeeDropdown();
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Data load error:", e); }
         }
 
         function renderProperties() {
@@ -542,29 +512,30 @@
             const typeFilter = document.getElementById('filter-listing-type').value;
             
             const filtered = properties.filter(p => {
-                return (p.propertyName.toLowerCase().includes(term) || p.location.toLowerCase().includes(term)) &&
-                       (typeFilter === "" || p.listingType === typeFilter);
+                const matchName = (p.propertyName || "").toLowerCase().includes(term);
+                const matchType = typeFilter === "" || p.listingType === typeFilter;
+                return matchName && matchType;
             });
 
             const html = filtered.map(p => `
                 <tr>
-                    <td>${p.imageUrl ? `<img src="${p.imageUrl}" style="width:40px;height:40px;border-radius:6px;object-fit:cover;">` : '🏠'}</td>
+                    <td>${p.imageUrl ? `<img src="${p.imageUrl}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;">` : '🏠'}</td>
                     <td><strong>${p.propertyName}</strong></td>
                     <td>${p.ownerName}</td>
                     <td>${p.propertyType}</td>
-                    <td>₹${p.price.toLocaleString()}</td>
+                    <td>₹${(p.price||0).toLocaleString()}</td>
                     <td><span class="badge ${p.listingType==='For Rent'?'badge-rent':'badge-sale'}">${p.listingType}</span></td>
                     <td>
-                        <button class="btn btn-secondary btn-sm" onclick="editProperty('${p.id}')">✏️</button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteProperty('${p.id}')">🗑️</button>
+                        <button class="btn btn-secondary" style="padding:4px 8px; font-size:12px;" onclick="editProperty('${p.id}')">Edit</button>
+                        <button class="btn btn-danger" style="padding:4px 8px; font-size:12px;" onclick="deleteProperty('${p.id}')">Del</button>
                     </td>
                 </tr>
             `).join('');
             document.getElementById('properties-table-body').innerHTML = html;
         }
 
+        // --- 5. ACTIONS ---
         async function saveProperty(e) {
-            e.preventDefault();
             const btn = document.getElementById('submit-property-btn');
             btn.innerText = "Saving...";
             
@@ -586,10 +557,10 @@
 
             if(editingPropertyId) {
                 await db.collection("properties").doc(editingPropertyId).update(data);
-                showToast("Updated Property", "success");
+                showToast("Property Updated");
             } else {
                 await db.collection("properties").add(data);
-                showToast("Property Added", "success");
+                showToast("Property Listed");
             }
             
             resetPropertyForm();
@@ -599,10 +570,10 @@
         }
 
         async function deleteProperty(id) {
-            if(confirm("Delete this?")) {
+            if(confirm("Are you sure you want to remove this listing?")) {
                 await db.collection("properties").doc(id).delete();
                 loadInitialData();
-                showToast("Deleted", "info");
+                showToast("Property Removed");
             }
         }
 
@@ -616,10 +587,10 @@
             document.getElementById('price').value = p.price;
             document.getElementById('location').value = p.location;
             document.getElementById('area-sqft').value = p.areaSqft;
+            document.getElementById('description').value = p.description || "";
             navigateTo('add-property');
         }
 
-        // Employee Logic
         async function saveEmployee() {
             const data = {
                 employeeId: document.getElementById('employee-id').value,
@@ -629,73 +600,66 @@
                 role: document.getElementById('employee-role').value
             };
             await db.collection("employees").add(data);
-            showToast("Employee Added", "success");
+            showToast("Agent Registered");
             document.getElementById('employee-form').reset();
             loadInitialData();
             navigateTo('employees');
         }
 
+        // --- 6. UTILITIES ---
         function renderEmployees() {
             document.getElementById('employees-table-body').innerHTML = employees.map(e => `
                 <tr><td>${e.employeeId}</td><td>${e.name}</td><td>${e.contact}</td><td><span class="badge badge-sale">${e.role}</span></td></tr>
             `).join('');
         }
-
         function updateEmployeeDropdown() {
-            document.getElementById('assigned-employee').innerHTML = '<option value="">Select</option>' + employees.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+            document.getElementById('assigned-employee').innerHTML = '<option value="">Select Agent</option>' + employees.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
         }
-
-        // Utils
         function updateDashboard() {
             document.getElementById('total-properties').innerText = properties.length;
             document.getElementById('total-employees').innerText = employees.length;
             document.getElementById('properties-for-sale').innerText = properties.filter(p => p.listingType === 'For Sale').length;
             document.getElementById('properties-for-rent').innerText = properties.filter(p => p.listingType === 'For Rent').length;
         }
-
-        function filterProperties() { renderProperties(); }
-        function resetPropertyForm() { document.getElementById('property-form').reset(); editingPropertyId = null; }
-        
         function navigateTo(page) {
             document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
             document.getElementById(page + '-page').classList.remove('hidden');
             document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
             if(window.innerWidth < 768) document.getElementById('sidebar').classList.remove('open');
         }
-        
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-        
-        function showToast(msg, type) {
-            const t = document.createElement('div'); t.className = `toast ${type}`; t.innerText = msg;
+        function resetPropertyForm() { document.getElementById('property-form').reset(); editingPropertyId = null; }
+        function showToast(msg) {
+            const t = document.createElement('div'); t.className = 'toast'; t.innerText = msg;
             document.getElementById('toast-container').appendChild(t);
             setTimeout(() => t.remove(), 3000);
         }
+        function filterProperties() { renderProperties(); }
 
-        // Excel Export/Import stubs (kept from original)
+        // --- 7. EXCEL ---
         function downloadTemplate() {
-            const data = [{ "Property Name": "Villa 1", "Owner Name": "John", "Price": 5000000, "Location": "Jaipur", "Property Type": "Villa", "BHK": "3BHK", "Listing Type": "For Sale", "Area": 2500, "Image Link": "" }];
+            const data = [{ "Property Name": "Sample Villa", "Owner Name": "John Doe", "Price": 5000000, "Location": "Mumbai", "Property Type": "Villa", "BHK": "3BHK", "Listing Type": "For Sale", "Area": 2500 }];
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "Template");
-            XLSX.writeFile(wb, "Template.xlsx");
+            XLSX.writeFile(wb, "RealEstate_Template.xlsx");
         }
-        
         function handleFileSelect(event) {
             const file = event.target.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 const wb = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
                 const data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
-                showToast(`Importing ${data.length} items...`, "info");
+                showToast(`Importing ${data.length} records...`);
                 data.forEach(async row => {
                     await db.collection("properties").add({
                         propertyName: row["Property Name"], ownerName: row["Owner Name"],
                         price: row["Price"], location: row["Location"],
                         propertyType: row["Property Type"], bhkType: row["BHK"],
                         listingType: row["Listing Type"], areaSqft: row["Area"],
-                        imageUrl: row["Image Link"] || "", dateAdded: firebase.firestore.FieldValue.serverTimestamp()
+                        imageUrl: "", dateAdded: firebase.firestore.FieldValue.serverTimestamp()
                     });
                 });
-                setTimeout(() => { loadInitialData(); showToast("Import Complete", "success"); }, 2000);
+                setTimeout(() => { loadInitialData(); showToast("Import Successful"); }, 2000);
             };
             reader.readAsArrayBuffer(file);
         }
