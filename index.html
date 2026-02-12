@@ -300,7 +300,7 @@
             <div id="dashboard-page" class="page">
                 <div class="page-header">
                     <h1 class="page-title">Dashboard Overview</h1>
-                    <p class="page-subtitle">Multi-Site Management: Studio, Stays+, Events & Realtors</p>
+                    <p class="page-subtitle">Multi-Site Management: Studio, Stays+, Events & Creative Realtors</p>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-card blue">
@@ -320,7 +320,7 @@
                         <div class="stat-value" id="stats-events">0</div>
                     </div>
                     <div class="stat-card red">
-                        <div class="stat-header"><span class="stat-title">Realtors</span><div class="stat-icon">🤝</div></div>
+                        <div class="stat-header"><span class="stat-title">Creative Realtors</span><div class="stat-icon">🤝</div></div>
                         <div class="stat-value" id="stats-realtors">0</div>
                     </div>
                 </div>
@@ -349,8 +349,8 @@
                             <option value="Creative Studio">Creative Studio</option>
                             <option value="Creative Stays+">Creative Stays+</option>
                             <option value="Creative Events">Creative Events</option>
-                            <option value="Realtors">Realtors</option>
-                            <option value="Real Estate">Real Estate (General)</option>
+                            <option value="Creative Realtors">Creative Realtors</option>
+                            <option value="Creative Estates">Creative Estates</option>
                         </select>
 
                         <select class="form-control" style="width: 150px;" id="filter-status" onchange="filterProperties()">
@@ -401,8 +401,8 @@
                                     <option value="Creative Studio">Creative Studio (Construction/Interiors)</option>
                                     <option value="Creative Stays+">Creative Stays+ (Hostels/Hotels)</option>
                                     <option value="Creative Events">Creative Events (Banquet/Gardens)</option>
-                                    <option value="Realtors">Realtors (Plots/Flats)</option>
-                                    <option value="Real Estate">Real Estate (General)</option>
+                                    <option value="Creative Realtors">Creative Realtors (Plots/Flats)</option>
+                                    <option value="Creative Estates">Creative Estates</option>
                                 </select>
                             </div>
 
@@ -461,7 +461,7 @@
                                     <option>Manager - Studio</option>
                                     <option>Manager - Stays</option>
                                     <option>Manager - Events</option>
-                                    <option>Manager - Realtors</option>
+                                    <option>Manager - Creative Realtors</option>
                                     <option>Sales Agent</option>
                                     <option>Office Admin</option>
                                     <option>Legal Advisor</option>
@@ -516,14 +516,14 @@
                 "Marriage gardens", 
                 "Farm houses"
             ],
-            "Realtors": [
+            "Creative Realtors": [
                 "Plots",
                 "Flats (Sale)",
                 "Rental Flats",
                 "Villas",
                 "Commercial"
             ],
-            "Real Estate": [
+            "Creative Estates": [
                 "Villa",
                 "Apartment",
                 "Plot",
@@ -631,11 +631,11 @@
                 const labelIndex = labels.indexOf(mName);
                 
                 if (labelIndex !== -1) {
-                    const cat = p.businessCategory || "Real Estate";
+                    const cat = p.businessCategory || "Creative Estates";
                     if (cat === 'Creative Studio') studioData[labelIndex]++;
                     else if (cat === 'Creative Stays+') staysData[labelIndex]++;
                     else if (cat === 'Creative Events') eventsData[labelIndex]++;
-                    else if (cat === 'Realtors') realtorsData[labelIndex]++;
+                    else if (cat === 'Creative Realtors') realtorsData[labelIndex]++;
                 }
             });
 
@@ -653,7 +653,7 @@
                         { label: 'Creative Studio', data: studioData, backgroundColor: '#3b82f6', borderRadius: 4 },
                         { label: 'Creative Stays+', data: staysData, backgroundColor: '#f97316', borderRadius: 4 },
                         { label: 'Creative Events', data: eventsData, backgroundColor: '#a855f7', borderRadius: 4 },
-                        { label: 'Realtors', data: realtorsData, backgroundColor: '#e11d48', borderRadius: 4 }
+                        { label: 'Creative Realtors', data: realtorsData, backgroundColor: '#e11d48', borderRadius: 4 }
                     ]
                 },
                 options: {
@@ -716,7 +716,7 @@
 
             const html = filtered.map(p => {
                 const status = p.status || "Available";
-                const category = p.businessCategory || "Real Estate";
+                const category = p.businessCategory || "Creative Estates";
                 
                 let badgeClass = "badge-sale"; 
                 if(status === "Booked/Sold") badgeClass = "badge-sold";
@@ -726,7 +726,7 @@
                 if(category === "Creative Studio") catColor = "#3b82f6";
                 if(category === "Creative Stays+") catColor = "#f97316";
                 if(category === "Creative Events") catColor = "#a855f7";
-                if(category === "Realtors") catColor = "#e11d48"; // RED for Realtors
+                if(category === "Creative Realtors") catColor = "#e11d48"; // RED for Realtors
 
                 return `
                 <tr>
@@ -816,7 +816,7 @@
             document.getElementById('bhk-type').value = p.bhkType || "";
             
             // Handle Dropdowns Logic
-            const businessCat = p.businessCategory || "Real Estate";
+            const businessCat = p.businessCategory || "Creative Estates";
             document.getElementById('business-category').value = businessCat;
             
             // Trigger dynamic update of second dropdown
@@ -879,7 +879,7 @@
             const studio = properties.filter(p => p.businessCategory === 'Creative Studio').length;
             const stays = properties.filter(p => p.businessCategory === 'Creative Stays+').length;
             const events = properties.filter(p => p.businessCategory === 'Creative Events').length;
-            const realtors = properties.filter(p => p.businessCategory === 'Realtors').length;
+            const realtors = properties.filter(p => p.businessCategory === 'Creative Realtors').length;
             
             document.getElementById('total-properties').innerText = properties.length;
             document.getElementById('stats-studio').innerText = studio;
@@ -935,7 +935,7 @@
                     await db.collection("properties").add({
                         propertyName: row["Name"], ownerName: row["Owner"],
                         price: row["Price"], location: row["Location"],
-                        businessCategory: row["Category"] || "Real Estate",
+                        businessCategory: row["Category"] || "Creative Estates",
                         propertyType: row["Type"], 
                         status: row["Status"] || "Available",
                         imageUrl: "", dateAdded: firebase.firestore.FieldValue.serverTimestamp()
