@@ -335,6 +335,15 @@
                             <canvas id="mainChart"></canvas>
                         </div>
                     </div>
+                    <div class="card chart-card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                            <h3 class="card-title" style="font-size: 18px; font-weight: 700; color: #1e3c72;">Sales Performance</h3>
+                            <div style="font-size:12px; color:#64748b;">Sales (Last 6 Months)</div>
+                        </div>
+                        <div style="position: relative; height: 350px; width: 100%;">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -494,6 +503,7 @@
         let properties = [];
         let employees = [];
         let editingPropertyId = null;
+        let salesChartInstance = null;
         let mainChartInstance = null;
 
         // --- UPDATED: BUSINESS CATEGORY MAPPING INCLUDING REALTORS ---
@@ -593,6 +603,7 @@
                 renderProperties();
                 renderEmployees();
                 updateEmployeeDropdown();
+                renderSalesChart();
                 renderCharts(); 
             } catch (e) { console.error("Data load error:", e); }
         }
@@ -671,6 +682,80 @@
                 }
             });
         }
+
+        function renderSalesChart() {
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const currentMonthIndex = new Date().getMonth();
+
+        const labels = [];
+        const salesData = [];
+
+        for (let i = 5; i >= 0; i--) {
+            let d = new Date();
+            d.setMonth(currentMonthIndex - i);
+            labels.push(months[d.getMonth()]);
+            salesData.push(0);
+        }
+
+        properties.forEach(p => {
+            let date;
+            if (p.dateAdded) {
+                date = p.dateAdded.toDate ? p.dateAdded.toDate() : new Date(p.dateAdded);
+            } else {
+                date = new Date();
+            }
+
+            const mIndex = date.getMonth();
+            const mName = months[mIndex];
+            const labelIndex = labels.indexOf(mName);
+
+            if (labelIndex !== -1 && p.status === 'Booked/Sold') {
+                // Assuming 'price' is the sales value
+                salesData[labelIndex] += (p.price || 0);
+            }
+        });
+
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
+
+        if (salesChartInstance) {
+            salesChartInstance.destroy();
+        }
+
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        salesChartInstance = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Sales (₹)',
+                    data: salesData,
+                    borderColor: '#22c55e', // Green color for sales
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)', // Light green fill
+                    borderWidth: 2,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#22c55e',
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }, // Hide legend
+                    tooltip: { mode: 'index', intersect: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [5, 5] },
+                        ticks: { callback: function (value) { return '₹' + value; } } // Add currency symbol
+                    },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    }
 
         // --- 6. PROPERTY LOGIC ---
         
@@ -885,6 +970,7 @@
             document.getElementById('stats-studio').innerText = studio;
             document.getElementById('stats-stays').innerText = stays;
             document.getElementById('stats-events').innerText = events;
+            renderSalesChart();
             document.getElementById('stats-realtors').innerText = realtors;
         }
         function navigateTo(page) {
